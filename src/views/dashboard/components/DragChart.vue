@@ -39,17 +39,17 @@ var myChart: echarts.ECharts;
 var option: EChartsOption;
 
 const symbolSize = 20;
-const data = [
-  [40, -10],
-  [-30, -5],
-  [-76.5, 20],
-  [-63.5, 40],
-  [-22.1, 50],
+var data = [
+  [0, 0],
+  [6, 20],
+  [12, 40],
+  [18, 80],
+  [24, 50],
 ];
 
 option = {
   title: {
-    text: "Try Dragging these Points",
+    // text: "Try Dragging these Points",
     left: "center",
   },
   tooltip: {
@@ -68,14 +68,14 @@ option = {
     bottom: "12%",
   },
   xAxis: {
-    min: -100,
-    max: 70,
+    min: -1,
+    max: 25,
     type: "value",
     axisLine: { onZero: false },
   },
   yAxis: {
-    min: -30,
-    max: 60,
+    min: -20,
+    max: 100,
     type: "value",
     axisLine: { onZero: false },
   },
@@ -139,7 +139,7 @@ setTimeout(function () {
       };
     }),
   });
-}, 0);
+}, 1);
 
 // window.addEventListener('resize', updatePosition);
 // myChart.on('dataZoom', updatePosition);
@@ -169,7 +169,8 @@ function hideTooltip(dataIndex: number) {
 }
 
 function onPointDragging(dataIndex: number, pos: number[]) {
-  data[dataIndex] = myChart.convertFromPixel("grid", pos);
+  // var charPos = myChart.convertFromPixel("grid", pos);
+  data[dataIndex][1] = myChart.convertFromPixel("grid", pos)[1];
   // Update data
   myChart.setOption({
     series: [
