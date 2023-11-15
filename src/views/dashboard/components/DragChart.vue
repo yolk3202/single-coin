@@ -9,6 +9,7 @@
 <script setup lang="ts">
 import * as echarts from "echarts";
 
+
 const props = defineProps({
   id: {
     type: String,
@@ -20,12 +21,12 @@ const props = defineProps({
   },
   width: {
     type: String,
-    default: "200px",
+    default: "400px",
     required: true,
   },
   height: {
     type: String,
-    default: "200px",
+    default: "600px",
     required: true,
   },
 });
@@ -39,18 +40,38 @@ var myChart: echarts.ECharts;
 var option: EChartsOption;
 
 const symbolSize = 20;
-var data = [
-  [0, 0],
-  [6, 20],
-  [12, 40],
-  [18, 80],
-  [24, 50],
+const data = [
+  [0,1.1],
+  [1,2.3],
+  [2,3.2],
+  [3,0],
+  [4,4.1],
+  [5,6.5],
+  [6,3],
+  [7,8],
+  [8,10],
+  [9,2],
+  [10,1],
+  [11,1],
+  [12,1],
+  [13,6],
+  [14,8],
+  [15,5],
+  [16,4],
+  [17,7],
+  [18,2],
+  [19,8],
+  [20,5],
+  [21,8],
+  [22,9],
+  [23,2],
 ];
+
+// const data = [0,1,2,3,4,1,2,3,4,1,2,3,4,5,4,3,2,1,2,3,4,4,10,3];
 
 option = {
   title: {
-    // text: "Try Dragging these Points",
-    left: "center",
+    text: "demo",
   },
   tooltip: {
     triggerOn: "none",
@@ -64,20 +85,21 @@ option = {
     },
   },
   grid: {
+    id:'grid',
     top: "8%",
     bottom: "12%",
   },
   xAxis: {
-    min: -1,
-    max: 25,
-    type: "value",
-    axisLine: { onZero: false },
+    id:'timeX',
+    type: "category",
+    // data:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
+    axisLine: { onZero: true },
   },
   yAxis: {
-    min: -20,
-    max: 100,
+    min: 0,
+    max: 10,
     type: "value",
-    axisLine: { onZero: false },
+    axisLine: { onZero: true },
   },
   dataZoom: [
     {
@@ -124,10 +146,12 @@ setTimeout(function () {
           cy: 0,
           r: symbolSize / 2,
         },
-        invisible: true,
+        invisible: false,
         draggable: true,
-        ondrag: function (dx: number, dy: number) {
-          onPointDragging(dataIndex, [(this as any).x, (this as any).y]);
+        ondrag: function (params: any) {
+          const origin_dot = myChart.convertToPixel('grid', data[dataIndex])
+          // 固定 x 轴，拖拽点.x 始终 = 数值点.x
+          onPointDragging(dataIndex, [(this as any).x=origin_dot[0], (this as any).y]);
         },
         onmousemove: function () {
           showTooltip(dataIndex);
@@ -140,9 +164,6 @@ setTimeout(function () {
     }),
   });
 }, 1);
-
-// window.addEventListener('resize', updatePosition);
-// myChart.on('dataZoom', updatePosition);
 
 function updatePosition() {
   myChart.setOption({
@@ -168,9 +189,9 @@ function hideTooltip(dataIndex: number) {
   });
 }
 
-function onPointDragging(dataIndex: number, pos: number[]) {
-  // var charPos = myChart.convertFromPixel("grid", pos);
-  data[dataIndex][1] = myChart.convertFromPixel("grid", pos)[1];
+function onPointDragging(this: any, dataIndex: number, pos: number[]) {
+  data[dataIndex] = myChart.convertFromPixel("grid", pos);
+
   // Update data
   myChart.setOption({
     series: [
@@ -181,8 +202,6 @@ function onPointDragging(dataIndex: number, pos: number[]) {
     ],
   });
 }
-
-// option && myChart.setOption(option);
 
 onMounted(() => {
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
