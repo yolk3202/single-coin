@@ -1,7 +1,22 @@
 <!-- 蜡烛图 / K 线图 -->
 <template>
   <el-card>
-    <template #header> 拖拽折线图 </template>
+    <template #header>
+      <el-row>
+        <el-col :span="12">拖拽折线图</el-col>
+        <el-col :span="12">
+          <el-date-picker
+            v-model="form.date"
+            type="date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            placeholder="选择日期"
+            @change="changeDate"
+          />
+          <el-button type="primary" @click="submitHandler">保存</el-button>
+        </el-col>
+      </el-row>
+    </template>
     <div :id="id" :class="className" :style="{ height, width }"></div>
   </el-card>
 </template>
@@ -34,13 +49,33 @@ const props = defineProps({
 type EChartsOption = echarts.EChartsOption;
 
 var myChart: echarts.ECharts;
+let form = reactive({
+  date: "",
+}); 
+function changeDate(val: any) {
+  console.log(val);
+  console.log(form.date);
+  // 请求接口； todo
+}
+
+function getData(val: any) {
+  console.log("====>val", val);
+  console.log("====>data", data);
+  data = val;
+}
+// 保存，提交
+function submitHandler() {
+  console.log("nihao===>", data);
+  console.log("nihao===>date", form.date);
+  
+}
 
 // var chartDom = document.getElementById(props.id)!;
 // var myChart = echarts.init(chartDom);
 var option: EChartsOption;
 
 const symbolSize = 20;
-const data = [
+let data = [
   [0,1.1],
   [1,2.3],
   [2,3.2],
@@ -85,12 +120,12 @@ option = {
     },
   },
   grid: {
-    id:'grid',
+    id: "grid",
     top: "8%",
     bottom: "12%",
   },
   xAxis: {
-    id:'timeX',
+    id: "timeX",
     type: "category",
     // data:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
     axisLine: { onZero: true },
@@ -149,9 +184,12 @@ setTimeout(function () {
         invisible: false,
         draggable: true,
         ondrag: function (params: any) {
-          const origin_dot = myChart.convertToPixel('grid', data[dataIndex])
+          const origin_dot = myChart.convertToPixel("grid", data[dataIndex]);
           // 固定 x 轴，拖拽点.x 始终 = 数值点.x
-          onPointDragging(dataIndex, [(this as any).x=origin_dot[0], (this as any).y]);
+          onPointDragging(dataIndex, [
+            ((this as any).x = origin_dot[0]),
+            (this as any).y,
+          ]);
         },
         onmousemove: function () {
           showTooltip(dataIndex);
@@ -191,7 +229,8 @@ function hideTooltip(dataIndex: number) {
 
 function onPointDragging(this: any, dataIndex: number, pos: number[]) {
   data[dataIndex] = myChart.convertFromPixel("grid", pos);
-
+  getData(data);
+  // 出数据
   // Update data
   myChart.setOption({
     series: [
@@ -203,10 +242,23 @@ function onPointDragging(this: any, dataIndex: number, pos: number[]) {
   });
 }
 
+function formatDateToYMD(date: Date) {
+  // 获取年、月、日
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份从0开始，需要加1
+  const day = String(date.getDate()).padStart(2, "0");
+
+  // 构建 yyyy-mm-dd 字符串
+  const dateString = `${year}-${month}-${day}`;
+  return dateString;
+}
+
 onMounted(() => {
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
   myChart.setOption(option);
   window.addEventListener("resize", updatePosition);
   myChart.on("dataZoom", updatePosition);
+  // 初始化时间
+  form.date = formatDateToYMD(new Date());
 });
 </script>
