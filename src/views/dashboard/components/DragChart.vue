@@ -26,29 +26,35 @@
 <script setup lang="ts">
 import * as echarts from "echarts";
 import { getCoinDataApi, sendCoinDataApi } from "@/api/coin";
-import CandleChart from './CandleChart.vue';
 
-export default {
-  components: {
-    CandleChart
-  },
-  methods: {
-    sendDataToCandleChart(res: any) {
-      // 将res传递给CandleChart组件
-      this.res = res;
-    }
-  },
-  mounted() {
-    sendCoinDataApi(options)
-      .then((res) => {
-        console.log("res===>", res);
-        this.sendDataToCandleChart(res); // 调用方法将res传递给CandleChart组件
-      })
-      .catch((err) => {
-        console.log("err===>", err);
-      });
-  }
-};
+import { storeToRefs } from "pinia";
+import { useCoinStore } from "@/store/modules/coin";
+const coinStore = useCoinStore();
+const { coinLine } = storeToRefs(coinStore);
+
+// import CandleChart from './CandleChart.vue';
+
+// export default {
+//   components: {
+//     CandleChart
+//   },
+//   methods: {
+//     sendDataToCandleChart(res: any) {
+//       // 将res传递给CandleChart组件
+//       this.res = res;
+//     }
+//   },
+//   mounted() {
+//     sendCoinDataApi(options)
+//       .then((res) => {
+//         console.log("res===>", res);
+//         this.sendDataToCandleChart(res); // 调用方法将res传递给CandleChart组件
+//       })
+//       .catch((err) => {
+//         console.log("err===>", err);
+//       });
+//   }
+// };
 
 const props = defineProps({
   id: {
@@ -73,13 +79,20 @@ const props = defineProps({
 
 type EChartsOption = echarts.EChartsOption;
 
-var myChart: echarts.ECharts;
+let myChart: echarts.ECharts;
 let form = reactive({
   date: "",
 });
 
 var option: EChartsOption;
 const symbolSize = 20;
+// let data = reactive([
+//   [0,9.1],[1,2.3],[2,3.2],[3,0],
+//   [4,4.1],[5,6.5],[6,3],[7,8],
+//   // [8,10],[9,2],[10,1],[11,1],[12,1],[13,6],
+//   // [14,8],[15,5],[16,4],[17,7],[18,2],[19,8],
+//   // [20,5],[21,8],[22,9],[23,2],
+// ])
 let data = [
   [0,9.1],[1,2.3],[2,3.2],[3,0],
   [4,4.1],[5,6.5],[6,3],[7,8],
@@ -88,7 +101,7 @@ let data = [
   // [20,5],[21,8],[22,9],[23,2],
 ];
 
-option = {
+option = reactive({
   title: {
     text: "demo",
   },
@@ -129,11 +142,7 @@ option = {
       data: data,
     },
   ],
-};
-
-
-
-
+});
 
 function changeDate(val: any) {
   console.log(val);
@@ -167,8 +176,6 @@ function submitHandler() {
       console.log("err===>", err);
     });
 }
-
-
 
 function updatePosition() {
   myChart.setOption({
@@ -220,78 +227,71 @@ function formatDateToYMD(date: Date) {
   return dateString;
 }
 
-// 拉取数据
-function getCoinData() {
-  return new Promise((resolve, reject) => {
-    let options = {
-      date: form.date,
-    };
-    getCoinDataApi(options)
-      .then((res) => {
-        console.log("res", res.line);
-        resolve(res.line); // 使用resolve返回获取到的结果
-      })
-      .catch((err) => {
-        console.log("err", err);
-        reject(err); // 使用reject返回错误信息
-      });
-  });
-};
+function initDragEnv() {
+  console.log("nihao======>", data);
+  setTimeout(function () {
+    console.log("nihao======>", data);
+    // Add shadow circles (which is not visible) to enable drag.
+    myChart.setOption({
+      graphic: data.map(function (item, dataIndex) {
+        return {
+          type: "circle",
+          position: myChart.convertToPixel("grid", item),
+          shape: {
+            cx: 0,
+            cy: 0,
+            r: symbolSize / 2,
+          },
+          invisible: false,
+          draggable: true,
+          ondrag: function (params: any) {
+            const origin_dot = myChart.convertToPixel("grid", data[dataIndex]);
+            // 固定 x 轴，拖拽点.x 始终 = 数值点.x
+            onPointDragging(dataIndex, [
+              ((this as any).x = origin_dot[0]),
+              (this as any).y,
+            ]);
+          },
+          onmousemove: function () {
+            showTooltip(dataIndex);
+          },
+          onmouseout: function () {
+            hideTooltip(dataIndex);
+          },
+          z: 100,
+        };
+      }),
+    });
+  }, 1);
+}
 
-onMounted(() => {
-  console.log('===初始化')
+function initChart() {
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
-  // 初始化时间
-  // form.date = formatDateToYMD(new Date());
-  form.date = '2023-11-16';
-  getCoinData()
-  .then((line: any) => {
-    if (Array.isArray(option.series)) {
-      data = line.data;
-      option.series[0].data = line.data;
-      console.log('==> option 内层', option.series[0].data);
-      console.log('==> data', data);
-      myChart.setOption(option);
-    };
-
-    setTimeout(function () {
-      // Add shadow circles (which is not visible) to enable drag.
-      myChart.setOption({
-        graphic: data.map(function (item, dataIndex) {
-          console.log('==> item', item)
-          return {
-            type: "circle",
-            position: myChart.convertToPixel("grid", item),
-            shape: {
-              cx: 0,
-              cy: 0,
-              r: symbolSize / 2,
-            },
-            invisible: false,
-            draggable: true,
-            ondrag: function (params: any) {
-              const origin_dot = myChart.convertToPixel("grid", data[dataIndex]);
-              // 固定 x 轴，拖拽点.x 始终 = 数值点.x
-              onPointDragging(dataIndex, [
-                ((this as any).x = origin_dot[0]),
-                (this as any).y,
-              ]);
-            },
-            onmousemove: function () {
-              showTooltip(dataIndex);
-            },
-            onmouseout: function () {
-              hideTooltip(dataIndex);
-            },
-            z: 100,
-          };
-        }),
-      });
-    }, 1);
-    
+  myChart.setOption(option);
+  nextTick(() => {
+    initDragEnv();
     window.addEventListener("resize", updatePosition);
     myChart.on("dataZoom", updatePosition);
-  }
-  );
+  });
+}
+// 拉取数据
+async function getCoinData() {
+  let options = {
+    date: form.date,
+  };
+  await coinStore.getCoinDataAction(options);
+  console.log("coinStore.coinData===>", coinLine.value);
+  let curData = JSON.parse(JSON.stringify(coinLine.value.data));
+  data = [...curData];
+  option.series[0].data = [...curData];
+  console.log("data===>", data);
+  console.log("myChart===>", myChart);
+  initChart();
+}
+onMounted(() => {
+  // 初始化时间
+  form.date = formatDateToYMD(new Date());
+  getCoinData();
+  
 });
 </script>

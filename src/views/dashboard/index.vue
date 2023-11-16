@@ -2,6 +2,10 @@
 import { useUserStore } from "@/store/modules/user";
 import { useTransition, TransitionPresets } from "@vueuse/core";
 
+// import { storeToRefs } from "pinia";
+// import { useCoinStore } from "@/store/modules/coin";
+// const coinStore = useCoinStore();
+
 defineOptions({
   // eslint-disable-next-line
   name: "Dashboard",
@@ -60,6 +64,14 @@ const orderCountOutput = useTransition(orderCount, {
   transition: TransitionPresets.easeOutExpo,
 });
 orderCount.value = 2000;
+
+// function loadCoinDataAll() {
+//   coinStore.getCoinDataAction();
+// }
+
+// onMounted(() => {
+//   loadCoinDataAll();
+// });
 </script>
 
 <template>
