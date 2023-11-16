@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import * as echarts from "echarts";
-
+import { getCoinDataApi, sendCoinDataApi } from "@/api/coin";
 
 const props = defineProps({
   id: {
@@ -51,7 +51,8 @@ type EChartsOption = echarts.EChartsOption;
 var myChart: echarts.ECharts;
 let form = reactive({
   date: "",
-}); 
+});
+
 function changeDate(val: any) {
   console.log(val);
   console.log(form.date);
@@ -63,11 +64,26 @@ function getData(val: any) {
   console.log("====>data", data);
   data = val;
 }
+// function demo(arr){
+//   //  处理二维数组
+// }
 // 保存，提交
 function submitHandler() {
   console.log("nihao===>", data);
   console.log("nihao===>date", form.date);
-  
+  // let data1 = demo(data)
+  let options = {
+    date: form.date,
+    data,
+  };
+  console.log("options===>", options);
+  sendCoinDataApi(options)
+    .then((res) => {
+      console.log("res===>", res);
+    })
+    .catch((err) => {
+      console.log("err===>", err);
+    });
 }
 
 // var chartDom = document.getElementById(props.id)!;
@@ -253,6 +269,20 @@ function formatDateToYMD(date: Date) {
   return dateString;
 }
 
+// 拉取数据
+function getCoinData() {
+  let options = {
+    date: form.date,
+  };
+  getCoinDataApi( options )
+    .then((res: any) => {
+      console.log("res", res);
+    })
+    .catch((err: any) => {
+      console.log("err", err);
+    });
+}
+
 onMounted(() => {
   console.log('===初始化')
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
@@ -261,5 +291,6 @@ onMounted(() => {
   myChart.on("dataZoom", updatePosition);
   // 初始化时间
   form.date = formatDateToYMD(new Date());
+  getCoinData();
 });
 </script>
