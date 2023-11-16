@@ -6,7 +6,7 @@ import { CoinDataOption } from "./types";
  */
 export function getCoinDataApi(options: CoinDataOption): AxiosPromise {
   return requestApi({
-    url: "/m1/3538235-0-default/create_ohlcv",
+    url: "/m1/3538235-0-default/get_line_kline",
     method: "get",
     params: options,
   });

@@ -92,7 +92,7 @@ var option: EChartsOption;
 
 const symbolSize = 20;
 let data = [
-  [0,1.1],
+  [0,9.1],
   [1,2.3],
   [2,3.2],
   [3,0],
@@ -100,22 +100,22 @@ let data = [
   [5,6.5],
   [6,3],
   [7,8],
-  [8,10],
-  [9,2],
-  [10,1],
-  [11,1],
-  [12,1],
-  [13,6],
-  [14,8],
-  [15,5],
-  [16,4],
-  [17,7],
-  [18,2],
-  [19,8],
-  [20,5],
-  [21,8],
-  [22,9],
-  [23,2],
+  // [8,10],
+  // [9,2],
+  // [10,1],
+  // [11,1],
+  // [12,1],
+  // [13,6],
+  // [14,8],
+  // [15,5],
+  // [16,4],
+  // [17,7],
+  // [18,2],
+  // [19,8],
+  // [20,5],
+  // [21,8],
+  // [22,9],
+  // [23,2],
 ];
 
 // const data = [0,1,2,3,4,1,2,3,4,1,2,3,4,5,4,3,2,1,2,3,4,4,10,3];
@@ -152,28 +152,6 @@ option = {
     type: "value",
     axisLine: { onZero: true },
   },
-  dataZoom: [
-    {
-      type: "slider",
-      xAxisIndex: 0,
-      filterMode: "none",
-    },
-    {
-      type: "slider",
-      yAxisIndex: 0,
-      filterMode: "none",
-    },
-    {
-      type: "inside",
-      xAxisIndex: 0,
-      filterMode: "none",
-    },
-    {
-      type: "inside",
-      yAxisIndex: 0,
-      filterMode: "none",
-    },
-  ],
   series: [
     {
       id: "a",
@@ -185,39 +163,7 @@ option = {
   ],
 };
 
-setTimeout(function () {
-  // Add shadow circles (which is not visible) to enable drag.
-  myChart.setOption({
-    graphic: data.map(function (item, dataIndex) {
-      return {
-        type: "circle",
-        position: myChart.convertToPixel("grid", item),
-        shape: {
-          cx: 0,
-          cy: 0,
-          r: symbolSize / 2,
-        },
-        invisible: false,
-        draggable: true,
-        ondrag: function (params: any) {
-          const origin_dot = myChart.convertToPixel("grid", data[dataIndex]);
-          // 固定 x 轴，拖拽点.x 始终 = 数值点.x
-          onPointDragging(dataIndex, [
-            ((this as any).x = origin_dot[0]),
-            (this as any).y,
-          ]);
-        },
-        onmousemove: function () {
-          showTooltip(dataIndex);
-        },
-        onmouseout: function () {
-          hideTooltip(dataIndex);
-        },
-        z: 100,
-      };
-    }),
-  });
-}, 1);
+
 
 function updatePosition() {
   myChart.setOption({
@@ -271,26 +217,76 @@ function formatDateToYMD(date: Date) {
 
 // 拉取数据
 function getCoinData() {
-  let options = {
-    date: form.date,
-  };
-  getCoinDataApi( options )
-    .then((res: any) => {
-      console.log("res", res);
-    })
-    .catch((err: any) => {
-      console.log("err", err);
-    });
-}
+  return new Promise((resolve, reject) => {
+    let options = {
+      date: form.date,
+    };
+    getCoinDataApi(options)
+      .then((res) => {
+        console.log("res", res.line);
+        resolve(res.line); // 使用resolve返回获取到的结果
+      })
+      .catch((err) => {
+        console.log("err", err);
+        reject(err); // 使用reject返回错误信息
+      });
+  });
+};
 
 onMounted(() => {
   console.log('===初始化')
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
-  myChart.setOption(option);
-  window.addEventListener("resize", updatePosition);
-  myChart.on("dataZoom", updatePosition);
   // 初始化时间
-  form.date = formatDateToYMD(new Date());
-  getCoinData();
+  // form.date = formatDateToYMD(new Date());
+  form.date = '2023-11-16';
+  getCoinData()
+  .then((line) => {
+    if (Array.isArray(option.series)) {
+      data = line.data;
+      option.series[0].data = line.data;
+      console.log('==> option 内层', option.series[0].data);
+      console.log('==> data', data);
+      myChart.setOption(option);
+    };
+
+    setTimeout(function () {
+      // Add shadow circles (which is not visible) to enable drag.
+      myChart.setOption({
+        graphic: data.map(function (item, dataIndex) {
+          console.log('==> item', item)
+          return {
+            type: "circle",
+            position: myChart.convertToPixel("grid", item),
+            shape: {
+              cx: 0,
+              cy: 0,
+              r: symbolSize / 2,
+            },
+            invisible: false,
+            draggable: true,
+            ondrag: function (params: any) {
+              const origin_dot = myChart.convertToPixel("grid", data[dataIndex]);
+              // 固定 x 轴，拖拽点.x 始终 = 数值点.x
+              onPointDragging(dataIndex, [
+                ((this as any).x = origin_dot[0]),
+                (this as any).y,
+              ]);
+            },
+            onmousemove: function () {
+              showTooltip(dataIndex);
+            },
+            onmouseout: function () {
+              hideTooltip(dataIndex);
+            },
+            z: 100,
+          };
+        }),
+      });
+    }, 1);
+    
+    window.addEventListener("resize", updatePosition);
+    myChart.on("dataZoom", updatePosition);
+  }
+  );
 });
 </script>
