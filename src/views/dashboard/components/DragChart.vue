@@ -17,13 +17,38 @@
         </el-col>
       </el-row>
     </template>
-    <div :id="id" :class="className" :style="{ height, width }"></div>
+    <div :id="id" :class="className" :style="{ height, width }">
+      <CandleChart :receivedData="res" />
+    </div>
   </el-card>
 </template>
 
 <script setup lang="ts">
 import * as echarts from "echarts";
 import { getCoinDataApi, sendCoinDataApi } from "@/api/coin";
+import CandleChart from './CandleChart.vue';
+
+export default {
+  components: {
+    CandleChart
+  },
+  methods: {
+    sendDataToCandleChart(res: any) {
+      // 将res传递给CandleChart组件
+      this.res = res;
+    }
+  },
+  mounted() {
+    sendCoinDataApi(options)
+      .then((res) => {
+        console.log("res===>", res);
+        this.sendDataToCandleChart(res); // 调用方法将res传递给CandleChart组件
+      })
+      .catch((err) => {
+        console.log("err===>", err);
+      });
+  }
+};
 
 const props = defineProps({
   id: {
@@ -53,72 +78,15 @@ let form = reactive({
   date: "",
 });
 
-function changeDate(val: any) {
-  console.log(val);
-  console.log(form.date);
-  // 请求接口； todo
-}
-
-function getData(val: any) {
-  console.log("====>val", val);
-  console.log("====>data", data);
-  data = val;
-}
-// function demo(arr){
-//   //  处理二维数组
-// }
-// 保存，提交
-function submitHandler() {
-  console.log("nihao===>", data);
-  console.log("nihao===>date", form.date);
-  // let data1 = demo(data)
-  let options = {
-    date: form.date,
-    data,
-  };
-  console.log("options===>", options);
-  sendCoinDataApi(options)
-    .then((res) => {
-      console.log("res===>", res);
-    })
-    .catch((err) => {
-      console.log("err===>", err);
-    });
-}
-
-// var chartDom = document.getElementById(props.id)!;
-// var myChart = echarts.init(chartDom);
 var option: EChartsOption;
-
 const symbolSize = 20;
 let data = [
-  [0,9.1],
-  [1,2.3],
-  [2,3.2],
-  [3,0],
-  [4,4.1],
-  [5,6.5],
-  [6,3],
-  [7,8],
-  // [8,10],
-  // [9,2],
-  // [10,1],
-  // [11,1],
-  // [12,1],
-  // [13,6],
-  // [14,8],
-  // [15,5],
-  // [16,4],
-  // [17,7],
-  // [18,2],
-  // [19,8],
-  // [20,5],
-  // [21,8],
-  // [22,9],
-  // [23,2],
+  [0,9.1],[1,2.3],[2,3.2],[3,0],
+  [4,4.1],[5,6.5],[6,3],[7,8],
+  // [8,10],[9,2],[10,1],[11,1],[12,1],[13,6],
+  // [14,8],[15,5],[16,4],[17,7],[18,2],[19,8],
+  // [20,5],[21,8],[22,9],[23,2],
 ];
-
-// const data = [0,1,2,3,4,1,2,3,4,1,2,3,4,5,4,3,2,1,2,3,4,4,10,3];
 
 option = {
   title: {
@@ -162,6 +130,43 @@ option = {
     },
   ],
 };
+
+
+
+
+
+function changeDate(val: any) {
+  console.log(val);
+  console.log(form.date);
+  // 请求接口； todo
+}
+
+function getData(val: any) {
+  console.log("====>val", val);
+  console.log("====>data", data);
+  data = val;
+}
+// function demo(arr){
+//   //  处理二维数组
+// }
+// 保存，提交
+function submitHandler() {
+  console.log("nihao===>", data);
+  console.log("nihao===>date", form.date);
+  // let data1 = demo(data)
+  let options = {
+    date: form.date,
+    data,
+  };
+  console.log("options===>", options);
+  sendCoinDataApi(options)
+    .then((res) => {
+      console.log("res===>", res);
+    })
+    .catch((err) => {
+      console.log("err===>", err);
+    });
+}
 
 
 
@@ -240,7 +245,7 @@ onMounted(() => {
   // form.date = formatDateToYMD(new Date());
   form.date = '2023-11-16';
   getCoinData()
-  .then((line) => {
+  .then((line: any) => {
     if (Array.isArray(option.series)) {
       data = line.data;
       option.series[0].data = line.data;

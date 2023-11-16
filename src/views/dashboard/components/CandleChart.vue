@@ -114,7 +114,7 @@ onMounted(() => {
   );
 
   getCoinData()
-  .then((kline) => {
+  .then((kline: any) => {
     if (Array.isArray(option.series)) {
       option.xAxis.data = kline.x;
       option.series[0].data = kline.data;
