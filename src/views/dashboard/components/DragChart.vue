@@ -254,6 +254,7 @@ function formatDateToYMD(date: Date) {
 }
 
 onMounted(() => {
+  console.log('===初始化')
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
   myChart.setOption(option);
   window.addEventListener("resize", updatePosition);
