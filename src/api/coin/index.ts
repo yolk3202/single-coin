@@ -6,7 +6,8 @@ import { CoinDataOption } from "./types";
  */
 export function getCoinDataApi(options: CoinDataOption): AxiosPromise {
   return requestApi({
-    url: "/m1/3538235-0-default/fetch_ohlcv",
+    url: "/m1/3538235-0-default/test_get_lines",
+    // url: "/m1/3538235-0-default/fetch_ohlcv",
     // url: "/api/fetch_ohlcv",
     method: "get",
     params: options,

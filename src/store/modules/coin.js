@@ -13,7 +13,7 @@ export const useCoinStore = defineStore("coin", () => {
     return new Promise((resolve, reject) => {
       getCoinDataApi(options)
         .then((res) => {
-          console.log("===>", res);
+          console.log("获取初始化 response===>", res);
           const {
             code,
             data: { kline, line },
@@ -37,18 +37,18 @@ export const useCoinStore = defineStore("coin", () => {
     return new Promise((resolve, reject) => {
       sendCoinDataApi(options)
         .then((res) => {
-          console.log("===>", res);
+          console.log("提交 response ===>", res);
           // 如果接口吐 k线数据，在这里接回来
-          // const {
-          //   code,
-          //   data: { kline, line },
-          //   message,
-          // } = res;
-          // if (code !== 200) {
-          //   reject(message);
-          // }
-          // coinKline.value = kline;
-          // coinLine.value = line;
+          const {
+            code,
+            data: { kline, line },
+            message,
+          } = res;
+          if (code !== 200) {
+            reject(message);
+          }
+          coinKline.value = kline;
+          coinLine.value = line;
           resolve(res);
         })
         .catch((err) => {

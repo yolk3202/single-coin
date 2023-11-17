@@ -9,6 +9,10 @@
 <script setup lang="ts">
 import * as echarts from "echarts";
 import { getCoinDataApi, sendCoinDataApi } from "@/api/coin";
+import { storeToRefs } from "pinia";
+import { useCoinStore } from "@/store/modules/coin";
+const coinStore = useCoinStore();
+const { coinKline } = storeToRefs(coinStore);
 
 const props = defineProps({
   id: {
@@ -98,8 +102,8 @@ function getCoinData() {
     };
     getCoinDataApi(options)
       .then((res) => {
-        console.log("res", res.kline);
-        resolve(res.kline); // 使用resolve返回获取到的结果
+        console.log("kline res", res.data.kline);
+        resolve(res.data.kline); // 使用resolve返回获取到的结果
       })
       .catch((err) => {
         console.log("err", err);
@@ -118,8 +122,8 @@ onMounted(() => {
     if (Array.isArray(option.series)) {
       option.xAxis.data = kline.x;
       option.series[0].data = kline.data;
-      console.log('==> option data 内层', option.series[0].data);
-      console.log('==> option', option);
+      console.log('==> kline option data 内层', option.series[0].data);
+      console.log('==> kline option', option);
       myChart.setOption(option);
 
       window.addEventListener("resize", () => {
@@ -128,7 +132,22 @@ onMounted(() => {
     };
   });
 
-  // chart.setOption(options);
+  watch(coinKline, ()=>{
+    console.log('提交 kline', coinKline.value);
+    let curKData = JSON.parse(JSON.stringify(coinKline.value));
+    if (Array.isArray(option.series)) {
+      option.xAxis.data = curKData.x;
+      option.series[0].data = curKData.data;
+      console.log('==> kline option data 内层', option.series[0].data);
+      console.log('==> kline option', option);
+      myChart.setOption(option);
+
+      window.addEventListener("resize", () => {
+        myChart.resize();
+      });
+    };
+  })
+  
   
 });
 </script>
