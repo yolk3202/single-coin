@@ -1,10 +1,10 @@
 import requestApi from "@/utils/requestApi";
 import { AxiosPromise } from "axios";
-import { CoinDataOption } from "./types";
+import { CoinDataOptionType,CurCoinPriceType } from "./types";
 /**
  * 拉取两个 线图 数据
  */
-export function getCoinDataApi(options: CoinDataOption): AxiosPromise {
+export function getCoinDataApi(options: CoinDataOptionType): AxiosPromise {
   return requestApi({
     // url: "/m1/3538235-0-default/test_get_lines",
     // url: "/m1/3538235-0-default/fetch_ohlcv",
@@ -24,5 +24,21 @@ export function sendCoinDataApi(options: any): AxiosPromise {
     url: "/api/create_ohlcv",
     method: "post",
     data: options,
+  });
+}
+
+// 获取交易货币列表
+export function getCoinTypeList(): AxiosPromise {
+  return requestApi({
+    url: "/api/get_exchange_info",
+    method: "get",
+  });
+}
+// 获取当前交易货币价格
+export function getCurCoinPrice(options: CurCoinPriceType): AxiosPromise {
+  return requestApi({
+    url: "/api/get_last_price",
+    method: "get",
+    params: options,
   });
 }

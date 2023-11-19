@@ -2,6 +2,7 @@
 import { useUserStore } from "@/store/modules/user";
 import { useTransition, TransitionPresets } from "@vueuse/core";
 import { formatDateToYMD } from "@/utils/utils";
+import { getCoinTypeList, getCurCoinPrice } from "@/api/coin";
 
 import { useCoinStore } from "@/store/modules/coin";
 const coinStore = useCoinStore();
@@ -24,6 +25,11 @@ function changeDate(val: any) {
   console.log(val);
   // 请求接口； todo
 }
+function selectCoinType() {
+  getPrice();
+}
+
+// demo
 function demoApi() {
   return new Promise((resolve, reject) => {
     const list = [
@@ -36,11 +42,21 @@ function demoApi() {
 }
 
 function getCoinList() {
-  demoApi().then((res) => {
+  getCoinTypeList().then((res) => {
     console.log(res);
-    coinList.value = res || [];
-    queryParams.symbol = res[0].name;
-    queryParams.radio = res[0].initPrice;
+    const { code, data, message } = res;
+    coinList.value = data || [];
+    queryParams.symbol = data[0];
+    handleQuery();
+    getPrice();
+  });
+}
+function getPrice() {
+  getCurCoinPrice({ symbol: queryParams.symbol }).then((res) => {
+    console.log('res', res)
+    const { code, data, message } = res;
+    queryParams.radio = data.last_price;
+    
   });
 }
 
@@ -48,9 +64,10 @@ async function handleQuery() {
   // 请求接口； todo
   let { date, symbol, radio } = queryParams;
   let options = {
-    date: '2023-12-01',
-    symbol,
-    radio,
+    // date,
+    // symbol,
+    date: "2023-12-01",
+    symbol: "ETH/USDT",
   };
   await coinStore.getCoinDataAction(options);
 }
@@ -60,7 +77,7 @@ onMounted(() => {
   getCoinList();
   // 初始化时间
   queryParams.date = formatDateToYMD(new Date());
-  handleQuery();
+  
 });
 </script>
 
@@ -82,13 +99,14 @@ onMounted(() => {
           <el-select
             v-model="queryParams.symbol"
             placeholder="选择币种"
+            @change="selectCoinType"
             clearable
           >
             <el-option
               v-for="item in coinList"
-              :key="item.name"
-              :value="item.name"
-              :label="item.name"
+              :key="item"
+              :value="item"
+              :label="item"
             />
           </el-select>
         </el-form-item>
