@@ -4,7 +4,7 @@
     <template #header>
       <el-row>
         <el-col :span="12">拖拽折线图</el-col>
-        <el-col :span="12">
+        <el-col :span="12" style="text-align: right">
           <el-button type="primary" @click="submitHandler">保存</el-button>
         </el-col>
       </el-row>
