@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useUserStore } from "@/store/modules/user";
 import { useTransition, TransitionPresets } from "@vueuse/core";
+import { formatDateToYMD } from "@/utils/utils";
 
-// import { storeToRefs } from "pinia";
-// import { useCoinStore } from "@/store/modules/coin";
-// const coinStore = useCoinStore();
+import { useCoinStore } from "@/store/modules/coin";
+const coinStore = useCoinStore();
 
 defineOptions({
   // eslint-disable-next-line
@@ -12,70 +12,97 @@ defineOptions({
   inheritAttrs: false,
 });
 
-const userStore = useUserStore();
-
-const date: Date = new Date();
-
-const greetings = computed(() => {
-  const hours = date.getHours();
-  if (hours >= 6 && hours < 8) {
-    return "晨起披衣出草堂，轩窗已自喜微凉🌅！";
-  } else if (hours >= 8 && hours < 12) {
-    return "上午好🌞！";
-  } else if (hours >= 12 && hours < 18) {
-    return "下午好☕！";
-  } else if (hours >= 18 && hours < 24) {
-    return "晚上好🌃！";
-  } else if (hours >= 0 && hours < 6) {
-    return "偷偷向银河要了一把碎星，只等你闭上眼睛撒入你的梦中，晚安🌛！";
-  }
+const queryFormRef = ref(ElForm); // 查询表单
+const queryParams = reactive({
+  date: "",
+  symbol: "",
+  radio: 0,
 });
+let coinList = ref([]); // 币种列表
 
-const duration = 5000;
+function changeDate(val: any) {
+  console.log(val);
+  // 请求接口； todo
+}
+function demoApi() {
+  return new Promise((resolve, reject) => {
+    const list = [
+      { name: "ETH/USDT", initPrice: 1000 },
+      { name: "ETH/USDT1", initPrice: 200 },
+      { name: "ETH/USDT2", initPrice: 100 },
+    ];
+    resolve(list);
+  });
+}
 
-// 收入金额
-const amount = ref(0);
-const amountOutput = useTransition(amount, {
-  duration: duration,
-  transition: TransitionPresets.easeOutExpo,
+function getCoinList() {
+  demoApi().then((res) => {
+    console.log(res);
+    coinList.value = res || [];
+    queryParams.symbol = res[0].name;
+    queryParams.radio = res[0].initPrice;
+  });
+}
+
+async function handleQuery() {
+  // 请求接口； todo
+  let { date, symbol, radio } = queryParams;
+  let options = {
+    date: '2023-12-01',
+    symbol,
+    radio,
+  };
+  await coinStore.getCoinDataAction(options);
+}
+
+onMounted(() => {
+  // 获取币种接口
+  getCoinList();
+  // 初始化时间
+  queryParams.date = formatDateToYMD(new Date());
+  handleQuery();
 });
-amount.value = 2000;
-
-// 访问数
-const visitCount = ref(0);
-const visitCountOutput = useTransition(visitCount, {
-  duration: duration,
-  transition: TransitionPresets.easeOutExpo,
-});
-visitCount.value = 2000;
-
-//消息数
-const messageCount = ref(0);
-const messageCountOutput = useTransition(messageCount, {
-  duration: duration,
-  transition: TransitionPresets.easeOutExpo,
-});
-messageCount.value = 2000;
-
-// 订单数
-const orderCount = ref(0);
-const orderCountOutput = useTransition(orderCount, {
-  duration: duration,
-  transition: TransitionPresets.easeOutExpo,
-});
-orderCount.value = 2000;
-
-// function loadCoinDataAll() {
-//   coinStore.getCoinDataAction();
-// }
-
-// onMounted(() => {
-//   loadCoinDataAll();
-// });
 </script>
 
 <template>
   <div class="dashboard-container">
+    <div class="search-container">
+      <el-form ref="queryFormRef" :model="queryParams" :inline="true">
+        <el-form-item label="日期" prop="keywords">
+          <el-date-picker
+            v-model="queryParams.date"
+            type="date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            placeholder="选择日期"
+            @change="changeDate"
+          />
+        </el-form-item>
+        <el-form-item label="币种" prop="status">
+          <el-select
+            v-model="queryParams.symbol"
+            placeholder="选择币种"
+            clearable
+          >
+            <el-option
+              v-for="item in coinList"
+              :key="item.name"
+              :value="item.name"
+              :label="item.name"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="价格" prop="status">
+          <el-input-number v-model="queryParams.radio" size="large" />
+        </el-form-item>
+        <el-form-item>
+          <el-button class="filter-item" type="primary" @click="handleQuery">
+            <i-ep-search />
+            搜索
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </div>
     <!-- github角标 -->
     <!-- <github-corner class="github-corner" /> -->
 

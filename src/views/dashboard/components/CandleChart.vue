@@ -82,6 +82,7 @@ const option = {
   ],
 };
 
+
 function formatDateToYMD(date: Date) {
   // 获取年、月、日
   const year = date.getFullYear();
@@ -112,25 +113,46 @@ function getCoinData() {
   });
 };
 
+// watch(
+//   ()=>coinKline,
+//   (val)=>{
+//     console.log('提交===',val)
+//     console.log('提交 kline', coinKline.value);
+//     let curKData = JSON.parse(JSON.stringify(coinKline.value));
+//     if (Array.isArray(option.series)) {
+//       option.xAxis.data = curKData.x;
+//       option.series[0].data = curKData.data;
+//       console.log('==> kline option data 内层', option.series[0].data);
+//       console.log('==> kline option', option);
+//       myChart.setOption(option);
+
+//       window.addEventListener("resize", () => {
+//         myChart.resize();
+//       });
+//     };
+//   },
+//   { immediate: true }
+// );
+
 onMounted(() => {
   const myChart = echarts.init(
     document.getElementById(props.id) as HTMLDivElement
   );
 
-  getCoinData()
-  .then((kline: any) => {
-    if (Array.isArray(option.series)) {
-      option.xAxis.data = kline.x;
-      option.series[0].data = kline.data;
-      console.log('==> kline option data 内层', option.series[0].data);
-      console.log('==> kline option', option);
-      myChart.setOption(option);
+  // getCoinData()
+  // .then((kline: any) => {
+  //   if (Array.isArray(option.series)) {
+  //     option.xAxis.data = kline.x;
+  //     option.series[0].data = kline.data;
+  //     console.log('==> kline option data 内层', option.series[0].data);
+  //     console.log('==> kline option', option);
+  //     myChart.setOption(option);
 
-      window.addEventListener("resize", () => {
-        myChart.resize();
-      });
-    };
-  });
+  //     window.addEventListener("resize", () => {
+  //       myChart.resize();
+  //     });
+  //   };
+  // });
 
   watch(coinKline, ()=>{
     console.log('提交 kline', coinKline.value);
