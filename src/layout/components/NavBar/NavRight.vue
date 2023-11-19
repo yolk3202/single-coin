@@ -6,9 +6,9 @@
       <svg-icon :icon-class="isFullscreen ? 'exit-fullscreen' : 'fullscreen'" />
     </div>
     <!-- 布局大小 -->
-    <el-tooltip content="布局大小" effect="dark" placement="bottom">
+    <!-- <el-tooltip content="布局大小" effect="dark" placement="bottom">
       <size-select class="setting-item" />
-    </el-tooltip>
+    </el-tooltip> -->
   </div>
 
   <!-- 用户头像 -->

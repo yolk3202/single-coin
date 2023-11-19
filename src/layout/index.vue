@@ -18,6 +18,7 @@ const { width } = useWindowSize();
  * 小屏（>=768px）
  */
 const WIDTH = 992;
+const showNav = false;
 
 const appStore = useAppStore();
 const settingsStore = useSettingsStore();
@@ -85,7 +86,7 @@ function toggleSideBar() {
       @click="handleOutsideClick"
     ></div>
 
-    <Sidebar class="sidebar-container" />
+    <Sidebar v-if="showNav" class="sidebar-container" />
     <template v-if="layout === 'mix'">
       <div class="mix-wrap">
         <!-- :menu-list="mixLeftMenu -->

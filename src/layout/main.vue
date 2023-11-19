@@ -22,7 +22,7 @@ const settingsStore = useSettingsStore();
 
 const fixedHeader = computed(() => settingsStore.fixedHeader);
 const showTagsView = computed(() => settingsStore.tagsView);
-const showSettings = computed(() => settingsStore.showSettings);
+const showSettings = false; //computed(() => settingsStore.showSettings);
 const layout = computed(() => settingsStore.layout);
 
 watchEffect(() => {

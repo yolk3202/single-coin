@@ -16,10 +16,11 @@ function toggleSideBar() {
   <div class="navbar">
     <!-- 左侧面包屑 -->
     <div class="flex">
-      <hamburger
+      <!-- <hamburger
         :is-active="appStore.sidebar.opened"
         @toggle-click="toggleSideBar"
-      />
+      /> -->
+      <div style="padding-left: 15px"></div>
       <breadcrumb />
     </div>
 
