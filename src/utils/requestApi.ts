@@ -29,9 +29,14 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    const { code, msg } = response.data;
+    console.log("all response ==>", response);
+    const { code, message } = response.data;
     if (code === 200) {
-      console.log("==> response", response);
+      console.log("200 response ==>", response);
+      return response.data;
+    }
+    if (code === 401 && message === "日期参数错误,实例: 2023-12-01") {
+      console.log("该日期无数据 response ==>", response);
       return response.data;
     }
     // 响应数据为二进制流处理(Excel导出)
@@ -39,12 +44,12 @@ service.interceptors.response.use(
       return response;
     }
 
-    ElMessage.error(msg || "系统出错");
-    return Promise.reject(new Error(msg || "Error"));
+    ElMessage.error(message || "系统出错");
+    return Promise.reject(new Error(message || "Error"));
   },
   (error: any) => {
     if (error.response.data) {
-      const { code, msg } = error.response.data;
+      const { code, message } = error.response.data;
       // token 过期,重新登录
       if (code === "A0230") {
         ElMessageBox.confirm("当前页面已失效，请重新登录", "提示", {
@@ -55,7 +60,7 @@ service.interceptors.response.use(
           window.location.href = "/";
         });
       } else {
-        ElMessage.error(msg || "系统出错");
+        ElMessage.error(message || "系统出错");
       }
     }
     return Promise.reject(error.message);

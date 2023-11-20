@@ -53,9 +53,9 @@ function getCoinList() {
 }
 function getPrice() {
   getCurCoinPrice({ symbol: queryParams.symbol }).then((res) => {
-    console.log('res', res)
+    console.log('getPrice res ==>', res)
     const { code, data, message } = res;
-    queryParams.radio = data.last_price;
+    queryParams.radio = Number(data.last_price);
     
   });
 }
@@ -232,7 +232,7 @@ onMounted(() => {
       <el-col :sm="24" :lg="24" class="mb-2">
         <DragChart
           id="DragChart"
-          height="200px"
+          height="150px"
           width="100%"
           class="bg-[var(--el-bg-color-overlay)]"
         />

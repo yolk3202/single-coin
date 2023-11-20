@@ -129,8 +129,11 @@ async function submitHandler() {
   console.log("nihao===>date", form.date);
   // let data1 = demo(data)
   let options = {
-    date: form.date,
+    // date: form.date,
+    date: "2023-12-01",
     data,
+    radio: 10,
+    symbol: "ETHUSDT"
   };
 
   await coinStore.sendCoinDataAction(options);
@@ -228,7 +231,7 @@ function initDragEnv() {
 }
 
 function initChart() {
-  myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
+  // myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
   myChart.setOption(option);
   nextTick(() => {
     initDragEnv();
@@ -240,6 +243,7 @@ function initChart() {
 async function getCoinData() {
   let options = {
     date: form.date,
+    symbol: "ETHUSDT"
   };
   await coinStore.getCoinDataAction(options);
   console.log("coinStore.coinData===>", coinLine.value);
@@ -260,9 +264,9 @@ async function getCoinData() {
 }
 onMounted(() => {
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
-  window.addEventListener("resize", updatePosition);
-  myChart.on("dataZoom", updatePosition);
-  // getCoinData();
+  // window.addEventListener("resize", updatePosition);
+  // myChart.on("dataZoom", updatePosition);
+  getCoinData();
 
   watch(coinLine, () => {
     console.log('提交 line', coinLine.value);
@@ -274,7 +278,7 @@ onMounted(() => {
     console.log("data===>", data);
     console.log("myChart===>", myChart);
 
-    myChart.setOption(option);
+    // myChart.setOption(option);
 
     initChart();
 

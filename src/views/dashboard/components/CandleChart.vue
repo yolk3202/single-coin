@@ -95,23 +95,23 @@ function formatDateToYMD(date: Date) {
 };
 
 // 拉取数据
-function getCoinData() {
-  return new Promise((resolve, reject) => {
-    let options = {
-      // date: formatDateToYMD(new Date()),
-      date:'2023-11-16',
-    };
-    getCoinDataApi(options)
-      .then((res) => {
-        console.log("kline res", res.data.kline);
-        resolve(res.data.kline); // 使用resolve返回获取到的结果
-      })
-      .catch((err) => {
-        console.log("err", err);
-        reject(err); // 使用reject返回错误信息
-      });
-  });
-};
+// function getCoinData() {
+//   return new Promise((resolve, reject) => {
+//     let options = {
+//       // date: formatDateToYMD(new Date()),
+//       date:'2023-11-16',
+//     };
+//     getCoinDataApi(options)
+//       .then((res) => {
+//         console.log("kline res", res.data.kline);
+//         resolve(res.data.kline); // 使用resolve返回获取到的结果
+//       })
+//       .catch((err) => {
+//         console.log("err", err);
+//         reject(err); // 使用reject返回错误信息
+//       });
+//   });
+// };
 
 // watch(
 //   ()=>coinKline,
@@ -155,7 +155,7 @@ onMounted(() => {
   // });
 
   watch(coinKline, ()=>{
-    console.log('提交 kline', coinKline.value);
+    console.log('Candle kline', coinKline.value);
     let curKData = JSON.parse(JSON.stringify(coinKline.value));
     if (Array.isArray(option.series)) {
       option.xAxis.data = curKData.x;
