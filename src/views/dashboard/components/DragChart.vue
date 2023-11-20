@@ -40,6 +40,10 @@ const props = defineProps({
     default: "600px",
     required: true,
   },
+  max: {
+    type: Number,
+    default: 10,
+  },
 });
 
 type EChartsOption = echarts.EChartsOption;
@@ -256,17 +260,23 @@ async function getCoinData() {
   console.log("myChart===>", myChart);
 
   myChart.setOption(option);
-  
 
   initChart();
 
   console.log('after initChart==> ')
 }
+watch(
+  () => props.max,
+  (val) => {
+    option.yAxis.max = val;
+  },
+  { immediate: true, deep: true }
+);
 onMounted(() => {
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
   // window.addEventListener("resize", updatePosition);
   // myChart.on("dataZoom", updatePosition);
-  getCoinData();
+  // getCoinData();
 
   watch(coinLine, () => {
     console.log('提交 line', coinLine.value);

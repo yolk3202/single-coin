@@ -47,16 +47,14 @@ function getCoinList() {
     const { code, data, message } = res;
     coinList.value = data || [];
     queryParams.symbol = data[0];
-    handleQuery();
     getPrice();
   });
 }
 function getPrice() {
   getCurCoinPrice({ symbol: queryParams.symbol }).then((res) => {
-    console.log('getPrice res ==>', res)
     const { code, data, message } = res;
     queryParams.radio = Number(data.last_price);
-    
+    handleQuery();
   });
 }
 
@@ -68,6 +66,7 @@ async function handleQuery() {
     // symbol,
     date: "2023-12-01",
     symbol: "ETH/USDT",
+    radio,
   };
   await coinStore.getCoinDataAction(options);
 }
@@ -77,7 +76,6 @@ onMounted(() => {
   getCoinList();
   // 初始化时间
   queryParams.date = formatDateToYMD(new Date());
-  
 });
 </script>
 
@@ -234,6 +232,7 @@ onMounted(() => {
           id="DragChart"
           height="150px"
           width="100%"
+          :max="queryParams.radio * 2"
           class="bg-[var(--el-bg-color-overlay)]"
         />
       </el-col>

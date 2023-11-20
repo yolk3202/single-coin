@@ -86,7 +86,7 @@ function toggleSideBar() {
       @click="handleOutsideClick"
     ></div>
 
-    <Sidebar v-if="showNav" class="sidebar-container" />
+    <Sidebar class="sidebar-container" />
     <template v-if="layout === 'mix'">
       <div class="mix-wrap">
         <!-- :menu-list="mixLeftMenu -->

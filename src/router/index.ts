@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import asyncRoutes from "./asyncRoute";
 
 export const Layout = () => import("@/layout/index.vue");
 
@@ -53,6 +54,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
     ],
   },
+  ...asyncRoutes,
 
   // 外部链接
   // {

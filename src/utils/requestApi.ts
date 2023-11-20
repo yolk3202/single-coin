@@ -25,7 +25,7 @@ service.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
+// 框架
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
@@ -35,7 +35,7 @@ service.interceptors.response.use(
       console.log("200 response ==>", response);
       return response.data;
     }
-    if (code === 401 && message === "日期参数错误,实例: 2023-12-01") {
+    if (code === 401) {
       console.log("该日期无数据 response ==>", response);
       return response.data;
     }

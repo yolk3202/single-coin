@@ -12,11 +12,17 @@ export const useCoinStore = defineStore("coin", () => {
 
   // 获取数据
   function getCoinDataAction(options) {
+    const {date, symbol, radio} = options;
+    console.log('radio===>', radio)
+    let params = {
+      date,
+      symbol,
+    }
     return new Promise((resolve, reject) => {
-      getCoinDataApi(options)
+      getCoinDataApi(params)
         .then((res) => {
           console.log("获取初始化 response===>", res);
-          if (res.code === 401 && res.message === "日期参数错误,实例: 2023-12-01") {
+          if (res.code === 401 ) {
             coinKline.value = {
                                 data:[
                                     [0.1,0.2,0.3,0.05],
@@ -28,10 +34,10 @@ export const useCoinStore = defineStore("coin", () => {
                               };
             coinLine.value = {
                                 data:[
-                                    [0,0],[12,0],[23,0]
+                                    [0,radio],[12,radio],[23,radio]
                                 ],
                                 date:"2023-12-01",
-                                radio:1,
+                                radio:radio,
                                 symbol:"ETH/USDT"
                               };
             resolve(res);
