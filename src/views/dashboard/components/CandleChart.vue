@@ -57,7 +57,7 @@ const option = {
   },
   grid: {
     top: "2%",
-    bottom: "10%",
+    bottom: "20%",
     left: "10%",
     right: "10%"
   },
@@ -79,6 +79,8 @@ const option = {
       type: "slider",
       xAxisIndex: 0,
       filterMode: "none",
+      bottom: 10,
+      // top: "80%",
     },
     {
       type: "slider",
@@ -112,7 +114,7 @@ onMounted(() => {
   );
 
   watch(coinKline, ()=>{
-    console.log('Candle kline', coinKline.value);
+    console.log('Candle kline ==>', coinKline.value);
     let curKData = JSON.parse(JSON.stringify(coinKline.value));
     let k_data = curKData.data;
     let k_x = curKData.x;
@@ -123,7 +125,17 @@ onMounted(() => {
     k_x = curKData.x.filter((_: any, index: number) => index % small === 0);
 
     if (Array.isArray(option.series)) {
-      option.xAxis.data = k_x;
+      // 把时间戳转换为 ”小时:分钟“的格式
+      const hour_min = k_x.map(
+        (timestamp:number) => {
+        const date = new Date(timestamp * 1000);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    });
+      console.log('Candle hour_min ==>', hour_min);
+
+      option.xAxis.data = hour_min;
       option.series[0].data = k_data;
       myChart.setOption(option);
 

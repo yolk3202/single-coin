@@ -236,36 +236,41 @@ function initChart() {
   });
 }
 
-// watch(
-//   () => props.max,
-//   (val) => {
-//     option.yAxis.max = val;
-//   },
-//   { immediate: true, deep: true }
-// );
+watch(
+  () => props.max,
+  (val) => {
+    option.yAxis.max = val;
+  },
+  { immediate: true, deep: true }
+);
 
 onMounted(() => {
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
 
   watch(coinLine, () => {
     console.log('drag line ==>', coinLine.value);
-    let curData = JSON.parse(JSON.stringify(coinLine.value.data));
-    const y_min = Math.min(curData.data);
-    const y_max = Math.max(curData.data);
+    let curData = JSON.parse(JSON.stringify(coinLine.value));
+    // 求 y 轴最大值，最小值
+    const y_1 = curData.data.map((item: any[]) => item[1]);
+    const y_max = Math.max(...y_1);
+    const y_min = Math.min(...y_1);
     console.log("drag y y_min y_max ===>", y_min, y_max);
+    console.log("drag curData ===>", curData);
 
-    data = [...curData];
+    data = [...curData.data];
     if (Array.isArray(option.series)) {
-      option.series[0].data = [...curData];
+      option.series[0].data = [...curData.data];
       console.log("option.series[0].data ===>", option.series[0].data);
     }
-    if (curData.date) {
-      option.yAxis.max = Math.ceil(curData.radio) * 2;
-    }
-    else{
-      option.yAxis.min = y_min;
-      option.yAxis.max = y_max + 1;
-    }
+    // if (curData.date) {
+    //   console.log('drag curData 有 date ==>')
+    //   option.yAxis.min = Math.ceil(y_min * 0.9);
+    //   option.yAxis.max = Math.ceil(y_max * 1.1);
+    // }
+    // else {
+    //   console.log('drag curData 无 date ==>')
+    //   option.yAxis.max = Math.ceil(curData.radio) * 2;  // coin.js 404 mock 假数据
+    // }
     console.log("drag option ===>", option);
     console.log("data ===>", data);
     console.log("myChart ===>", myChart);
