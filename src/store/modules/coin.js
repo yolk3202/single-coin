@@ -21,36 +21,39 @@ export const useCoinStore = defineStore("coin", () => {
     return new Promise((resolve, reject) => {
       getCoinDataApi(params)
         .then((res) => {
+          const {
+            code, data, message,
+          } = res;
           console.log("获取初始化 response===>", res);
-          if (res.code === 401 ) {
+          if (code === 404 ) {
             coinKline.value = {
                                 data:[
-                                    [0.1,0.2,0.3,0.05],
-                                    [0.15,0.1,0.2,0.05],
-                                    [0.05,0.1,0.01,0.3],
+                                    [radio + 0.1,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.15,radio + 0.1,radio + 0.2,radio + 0.05],
+                                    [radio + 0.05,radio + 0.1,radio + 0.01,radio + 0.3],
+                                    [radio + 0.1,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.25,radio + 0.1,radio + 0.2,radio + 0.05],
+                                    [radio + 0.05,radio + 0.1,radio + 0.01,radio + 0.3],
+                                    [radio + 0.3,radio + 0.2,radio + 0.3,radio + 0.05],
                                 ],
-                                date:"2023-12-01",
-                                x:[0,12,22]
+                                // date:"2023-12-01",
+                                x:[0,4,8,12,16,20,23]
                               };
             coinLine.value = {
                                 data:[
-                                    [0,radio],[12,radio],[23,radio]
+                                    [0,radio],[4,radio],[8,radio],[12,radio],[16,radio],[20,radio],[23,radio]
                                 ],
-                                date:"2023-12-01",
+                                // date:"2023-12-01",
                                 radio:radio,
-                                symbol:"ETH/USDT"
+                                // symbol:"ETH/USDT"
                               };
             resolve(res);
           }
-          const {
-            code,
-            data: { kline, line },
-            message,
-          } = res;
+          
           if (code === 200) {
             console.log('200 res ==>', res)
-            coinKline.value = kline;
-            coinLine.value = line;
+            coinKline.value = data.kline;
+            coinLine.value = data.line;
             resolve(res);
           }
           reject(message);
@@ -69,15 +72,13 @@ export const useCoinStore = defineStore("coin", () => {
           console.log("提交 response ===>", res);
           // 如果接口吐 k线数据，在这里接回来
           const {
-            code,
-            data: { kline, line },
-            message,
+            code, data, message,
           } = res;
           if (code !== 200) {
             reject(message);
           }
-          coinKline.value = kline;
-          coinLine.value = line;
+          coinKline.value = data.kline;
+          coinLine.value = data.line;
           resolve(res);
         })
         .catch((err) => {

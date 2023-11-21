@@ -44,6 +44,10 @@ const props = defineProps({
     type: Number,
     default: 10,
   },
+  date: {
+    type: String,
+    default: "2023-12-01",
+  }
 });
 
 type EChartsOption = echarts.EChartsOption;
@@ -55,13 +59,6 @@ let form = reactive({
 
 var option: EChartsOption;
 const symbolSize = 20;
-// let data = reactive([
-//   [0,9.1],[1,2.3],[2,3.2],[3,0],
-//   [4,4.1],[5,6.5],[6,3],[7,8],
-//   // [8,10],[9,2],[10,1],[11,1],[12,1],[13,6],
-//   // [14,8],[15,5],[16,4],[17,7],[18,2],[19,8],
-//   // [20,5],[21,8],[22,9],[23,2],
-// ])
 let data = [
   [0, 9.1], [1, 2.3], [2, 3.2], [3, 0],
   [4, 4.1], [5, 6.5], [6, 3], [7, 8],
@@ -71,9 +68,9 @@ let data = [
 ];
 
 option = reactive({
-  title: {
-    text: "demo",
-  },
+  // title: {
+  //   text: "demo",
+  // },
   tooltip: {
     triggerOn: "none",
     formatter: function (params: any) {
@@ -87,8 +84,8 @@ option = reactive({
   },
   grid: {
     id: "grid",
-    top: "8%",
-    bottom: "12%",
+    top: "10%",
+    bottom: "15%",
   },
   xAxis: {
     id: "timeX",
@@ -129,19 +126,27 @@ function getData(val: any) {
 // }
 // 保存，提交
 async function submitHandler() {
-  console.log("提交 data===>", data);
-  console.log("nihao===>date", form.date);
-  // let data1 = demo(data)
+  console.log("提交 drag data===>", data);
+  console.log("drag date ===>", form.date);
+  
   let options = {
-    // date: form.date,
-    date: "2023-12-01",
+    date: form.date,
     data,
     radio: 10,
     symbol: "ETHUSDT"
   };
 
+  watch(
+  () => props.date,
+  (val) => {
+    options.date = val;
+  },
+  { immediate: true, deep: true }
+);
+
+  console.log("提交 drag options ===>", options);
   await coinStore.sendCoinDataAction(options);
-  console.log("提交 line ===>", coinLine.value);
+  console.log("提交 drag line ===>", coinLine.value);
   // let curData = JSON.parse(JSON.stringify(coinLine.value.data));
 }
 
@@ -184,21 +189,8 @@ function onPointDragging(this: any, dataIndex: number, pos: number[]) {
   });
 }
 
-function formatDateToYMD(date: Date) {
-  // 获取年、月、日
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份从0开始，需要加1
-  const day = String(date.getDate()).padStart(2, "0");
-
-  // 构建 yyyy-mm-dd 字符串
-  const dateString = `${year}-${month}-${day}`;
-  return dateString;
-}
-
 function initDragEnv() {
-  console.log("nihao======>", data);
   setTimeout(function () {
-    console.log("nihao======>", data);
     // Add shadow circles (which is not visible) to enable drag.
     myChart.setOption({
       graphic: data.map(function (item, dataIndex) {
@@ -211,7 +203,7 @@ function initDragEnv() {
             cy: 0,
             r: symbolSize / 2,
           },
-          invisible: false,
+          invisible: true,
           draggable: true,
           ondrag: function (params: any) {
             const origin_dot = myChart.convertToPixel("grid", data[dataIndex]);
@@ -243,56 +235,41 @@ function initChart() {
     myChart.on("dataZoom", updatePosition);
   });
 }
-// 拉取数据
-async function getCoinData() {
-  let options = {
-    date: form.date,
-    symbol: "ETHUSDT"
-  };
-  await coinStore.getCoinDataAction(options);
-  console.log("coinStore.coinData===>", coinLine.value);
-  let curData = JSON.parse(JSON.stringify(coinLine.value.data));
-  data = [...curData];
-  if (Array.isArray(option.series)) {
-    option.series[0].data = [...curData];
-  }
-  console.log("data===>", data);
-  console.log("myChart===>", myChart);
 
-  myChart.setOption(option);
+// watch(
+//   () => props.max,
+//   (val) => {
+//     option.yAxis.max = val;
+//   },
+//   { immediate: true, deep: true }
+// );
 
-  initChart();
-
-  console.log('after initChart==> ')
-}
-watch(
-  () => props.max,
-  (val) => {
-    option.yAxis.max = val;
-  },
-  { immediate: true, deep: true }
-);
 onMounted(() => {
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
-  // window.addEventListener("resize", updatePosition);
-  // myChart.on("dataZoom", updatePosition);
-  // getCoinData();
 
   watch(coinLine, () => {
-    console.log('提交 line', coinLine.value);
+    console.log('drag line ==>', coinLine.value);
     let curData = JSON.parse(JSON.stringify(coinLine.value.data));
+    const y_min = Math.min(curData.data);
+    const y_max = Math.max(curData.data);
+    console.log("drag y y_min y_max ===>", y_min, y_max);
+
     data = [...curData];
     if (Array.isArray(option.series)) {
       option.series[0].data = [...curData];
+      console.log("option.series[0].data ===>", option.series[0].data);
     }
-    console.log("data===>", data);
-    console.log("myChart===>", myChart);
-
-    // myChart.setOption(option);
-
+    if (curData.date) {
+      option.yAxis.max = Math.ceil(curData.radio) * 2;
+    }
+    else{
+      option.yAxis.min = y_min;
+      option.yAxis.max = y_max + 1;
+    }
+    console.log("drag option ===>", option);
+    console.log("data ===>", data);
+    console.log("myChart ===>", myChart);
     initChart();
-
-    console.log('after initChart==> ')
   });
 
 });

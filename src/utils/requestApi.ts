@@ -35,8 +35,8 @@ service.interceptors.response.use(
       console.log("200 response ==>", response);
       return response.data;
     }
-    if (code === 401) {
-      console.log("该日期无数据 response ==>", response);
+    if (code === 404) {
+      console.log("404 response ==>", response);
       return response.data;
     }
     // 响应数据为二进制流处理(Excel导出)

@@ -14,7 +14,7 @@
       <lang-select class="ml-2 cursor-pointer" />
     </div>
     <!-- 登录表单 -->
-    <!-- <el-card
+    <el-card
       class="z-1 !border-none w-100 !bg-transparent !rounded-4% <sm:w-83"
     >
       <div class="text-center relative">
@@ -69,7 +69,7 @@
               />
             </span>
           </el-form-item>
-        </el-tooltip> -->
+        </el-tooltip>
 
         <!-- 验证码 -->
         <!-- <el-form-item prop="verifyCode">
@@ -100,21 +100,21 @@
           </div>
         </el-form-item> -->
 
-        <!-- <el-button
+        <el-button
           :loading="loading"
           type="primary"
           class="w-full"
           @click.prevent="handleLogin"
           >{{ $t("login.login") }}
-        </el-button> -->
+        </el-button>
 
         <!-- 账号密码提示 -->
-        <!-- <div class="mt-10 text-sm">
+        <div class="mt-10 text-sm">
           <span>{{ $t("login.username") }}: admin</span>
           <span class="ml-4"> {{ $t("login.password") }}: 123456</span>
         </div>
       </el-form>
-    </el-card> -->
+    </el-card>
 
     <!-- ICP备案 -->
     <div class="absolute bottom-1 text-[10px] text-center">

@@ -33,6 +33,10 @@ const props = defineProps({
     default: "200px",
     required: true,
   },
+  max: {
+    type: Number,
+    default: 10,
+  },
 });
 
 const option = {
@@ -44,6 +48,18 @@ const option = {
     max: 10,
     type: "value",
     axisLine: { onZero: true },
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'line'
+    }
+  },
+  grid: {
+    top: "2%",
+    bottom: "10%",
+    left: "10%",
+    right: "10%"
   },
   series: [
     {
@@ -82,86 +98,33 @@ const option = {
   ],
 };
 
-
-function formatDateToYMD(date: Date) {
-  // 获取年、月、日
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份从0开始，需要加1
-  const day = String(date.getDate()).padStart(2, "0");
-
-  // 构建 yyyy-mm-dd 字符串
-  const dateString = `${year}-${month}-${day}`;
-  return dateString;
-};
-
-// 拉取数据
-// function getCoinData() {
-//   return new Promise((resolve, reject) => {
-//     let options = {
-//       // date: formatDateToYMD(new Date()),
-//       date:'2023-11-16',
-//     };
-//     getCoinDataApi(options)
-//       .then((res) => {
-//         console.log("kline res", res.data.kline);
-//         resolve(res.data.kline); // 使用resolve返回获取到的结果
-//       })
-//       .catch((err) => {
-//         console.log("err", err);
-//         reject(err); // 使用reject返回错误信息
-//       });
-//   });
-// };
-
-// watch(
-//   ()=>coinKline,
-//   (val)=>{
-//     console.log('提交===',val)
-//     console.log('提交 kline', coinKline.value);
-//     let curKData = JSON.parse(JSON.stringify(coinKline.value));
-//     if (Array.isArray(option.series)) {
-//       option.xAxis.data = curKData.x;
-//       option.series[0].data = curKData.data;
-//       console.log('==> kline option data 内层', option.series[0].data);
-//       console.log('==> kline option', option);
-//       myChart.setOption(option);
-
-//       window.addEventListener("resize", () => {
-//         myChart.resize();
-//       });
-//     };
-//   },
-//   { immediate: true }
-// );
+watch(
+  () => props.max,
+  (val) => {
+    option.yAxis.max = val;
+  },
+  { immediate: true, deep: true }
+);
 
 onMounted(() => {
   const myChart = echarts.init(
     document.getElementById(props.id) as HTMLDivElement
   );
 
-  // getCoinData()
-  // .then((kline: any) => {
-  //   if (Array.isArray(option.series)) {
-  //     option.xAxis.data = kline.x;
-  //     option.series[0].data = kline.data;
-  //     console.log('==> kline option data 内层', option.series[0].data);
-  //     console.log('==> kline option', option);
-  //     myChart.setOption(option);
-
-  //     window.addEventListener("resize", () => {
-  //       myChart.resize();
-  //     });
-  //   };
-  // });
-
   watch(coinKline, ()=>{
     console.log('Candle kline', coinKline.value);
     let curKData = JSON.parse(JSON.stringify(coinKline.value));
+    let k_data = curKData.data;
+    let k_x = curKData.x;
+
+    // echarts 超过 600 个，按比例间隔取点。因为 >= 600 个点，放大后蜡烛图只是一条线，不完整
+    const small = Math.ceil(k_data.length / 600)
+    k_data = curKData.data.filter((_: any, index: number) => index % small === 0);
+    k_x = curKData.x.filter((_: any, index: number) => index % small === 0);
+
     if (Array.isArray(option.series)) {
-      option.xAxis.data = curKData.x;
-      option.series[0].data = curKData.data;
-      console.log('==> kline option data 内层', option.series[0].data);
-      console.log('==> kline option', option);
+      option.xAxis.data = k_x;
+      option.series[0].data = k_data;
       myChart.setOption(option);
 
       window.addEventListener("resize", () => {
@@ -169,7 +132,6 @@ onMounted(() => {
       });
     };
   })
-  
   
 });
 </script>
