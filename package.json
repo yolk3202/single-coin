@@ -11,7 +11,8 @@
     "lint:prettier": "prettier --write \"**/*.{js,cjs,ts,json,tsx,css,less,scss,vue,html,md}\"",
     "lint:stylelint": "stylelint  \"**/*.{css,scss,vue}\" --fix",
     "lint:lint-staged": "lint-staged",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "build": "vite build --mode production"
   },
   "config": {
     "commitizen": {
