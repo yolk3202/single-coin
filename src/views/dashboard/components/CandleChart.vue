@@ -1,7 +1,7 @@
 <!-- 蜡烛图 / K 线图 -->
 <template>
   <el-card>
-    <template #header> K 线图 </template>
+    <template #header>K 线图 ( UTC 时间 )</template>
     <div :id="id" :class="className" :style="{ height, width }"></div>
   </el-card>
 </template>
