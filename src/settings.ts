@@ -52,7 +52,7 @@ interface DefaultSettings {
 }
 
 const defaultSettings: DefaultSettings = {
-  title: "vue3-element-admin",
+  title: "市值管理工具",
   version: "v.2.6.5",
   showSettings: true,
   tagsView: true,

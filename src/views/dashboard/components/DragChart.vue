@@ -90,7 +90,6 @@ option = reactive({
   xAxis: {
     id: "timeX",
     type: "value",
-    // data:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
     axisLine: { onZero: true },
   },
   yAxis: {
@@ -117,13 +116,11 @@ function changeDate(val: any) {
 }
 
 function getData(val: any) {
-  console.log("====>val", val);
-  console.log("====>data", data);
+  // console.log("====>val", val);
+  // console.log("====>data", data);
   data = val;
 }
-// function demo(arr){
-//   //  处理二维数组
-// }
+
 // 保存，提交
 async function submitHandler() {
   console.log("提交 drag data===>", data);
@@ -147,7 +144,6 @@ async function submitHandler() {
   console.log("提交 drag options ===>", options);
   await coinStore.sendCoinDataAction(options);
   console.log("提交 drag line ===>", coinLine.value);
-  // let curData = JSON.parse(JSON.stringify(coinLine.value.data));
 }
 
 function updatePosition() {
@@ -169,9 +165,6 @@ function showTooltip(dataIndex: number) {
   // 获取数据点的位置
   const pointPosition = myChart.convertToPixel("grid", data[dataIndex]);
   const pointTop = pointPosition[1];
-
-  // console.log('containerPosition drag ==>', containerPosition)
-  // console.log('pointPosition drag ==>', pointPosition)
 
   // 计算展示框的位置
   let tooltipTop;
@@ -199,7 +192,7 @@ function hideTooltip(dataIndex: number) {
 
 function onPointDragging(this: any, dataIndex: number, pos: number[]) {
   data[dataIndex] = myChart.convertFromPixel("grid", pos);
-  getData(data);
+  // getData(data);
   // 出数据
   // Update data
   myChart.setOption({
@@ -230,10 +223,21 @@ function initDragEnv() {
           draggable: true,
           ondrag: function (params: any) {
             const origin_dot = myChart.convertToPixel("grid", data[dataIndex]);
+            let newX = Math.max(Math.min(params.event.offsetX, myChart.getWidth()), 0); // 限制拖拽点在容器内部
+            let newY = Math.max(Math.min(params.event.offsetY, myChart.getHeight() * 0.85), 15); // 限制拖拽点在容器内部
+
+            // 处理边界情况，防止拖拽用力过猛，超出边界时，拖拽点消失
+            if (isNaN(newX)) {
+              newX = origin_dot[0];
+            }
+            if (isNaN(newY)) {
+              newY = origin_dot[1];
+            }
+
             // 固定 x 轴，拖拽点.x 始终 = 数值点.x
             onPointDragging(dataIndex, [
               ((this as any).x = origin_dot[0]),
-              (this as any).y,
+              (this as any).y = newY,
             ]);
           },
           onmousemove: function () {
@@ -247,7 +251,7 @@ function initDragEnv() {
       }),
     });
   }, 1);
-}
+};
 
 function initChart() {
   // myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
@@ -299,6 +303,5 @@ onMounted(() => {
     console.log("myChart ===>", myChart);
     initChart();
   });
-
 });
 </script>
