@@ -69,8 +69,6 @@ async function handleQuery() {
   let options = {
     date,
     symbol,
-    // date: "2023-12-01",
-    // symbol: "ETH/USDT",
     radio,
   };
   await coinStore.getCoinDataAction(options);
@@ -238,6 +236,9 @@ onMounted(() => {
           height="150px"
           width="100%"
           :max="queryParams.radio * 2"
+          :date="queryParams.date"
+          :radio="queryParams.radio"
+          :symbol="queryParams.symbol"
           class="bg-[var(--el-bg-color-overlay)]"
         />
       </el-col>

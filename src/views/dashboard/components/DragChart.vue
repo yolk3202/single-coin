@@ -46,19 +46,24 @@ const props = defineProps({
   },
   date: {
     type: String,
-    default: "2023-12-01",
+    default: "",
+  },
+  radio: {
+    type: Number,
+    default: "",
+  },
+  symbol: {
+    type: String,
+    default: "",
   }
 });
 
 type EChartsOption = echarts.EChartsOption;
 
 let myChart: echarts.ECharts;
-let form = reactive({
-  date: "",
-});
+let options: EChartsOption;
+const symbolSize = 12;
 
-var option: EChartsOption;
-const symbolSize = 20;
 let data = [
   [0, 9.1], [1, 2.3], [2, 3.2], [3, 0],
   [4, 4.1], [5, 6.5], [6, 3], [7, 8],
@@ -67,10 +72,8 @@ let data = [
   // [20,5],[21,8],[22,9],[23,2],
 ];
 
-option = reactive({
-  // title: {
-  //   text: "demo",
-  // },
+options = {
+  // title: {text: "demo",},
   tooltip: {
     triggerOn: "none",
     formatter: function (params: any) {
@@ -98,20 +101,18 @@ option = reactive({
     type: "value",
     axisLine: { onZero: true },
   },
-  series: [
-    {
-      id: "a",
-      type: "line",
-      smooth: true,
-      symbolSize: symbolSize,
-      data: data,
-    },
-  ],
-});
+  series: [{
+    id: "a",
+    type: "line",
+    smooth: true,
+    symbolSize: symbolSize,
+    data: data,
+  }],
+};
 
 function changeDate(val: any) {
   console.log(val);
-  console.log(form.date);
+  // console.log(form.date);
   // 请求接口； todo
 }
 
@@ -124,22 +125,37 @@ function getData(val: any) {
 // 保存，提交
 async function submitHandler() {
   console.log("提交 drag data===>", data);
-  console.log("drag date ===>", form.date);
   
   let options = {
-    date: form.date,
+    date: "",
     data,
     radio: 10,
     symbol: "ETHUSDT"
   };
 
   watch(
-  () => props.date,
-  (val) => {
-    options.date = val;
-  },
-  { immediate: true, deep: true }
-);
+    () => props.date,
+    (val) => {
+      options.date = val;
+    },
+    { immediate: true, deep: true }
+  );
+
+  watch(
+    () => props.radio,
+    (val) => {
+      options.radio = val;
+    },
+    { immediate: true, deep: true }
+  );
+
+  watch(
+    () => props.symbol,
+    (val) => {
+      options.symbol = val;
+    },
+    { immediate: true, deep: true }
+  );
 
   console.log("提交 drag options ===>", options);
   await coinStore.sendCoinDataAction(options);
@@ -191,17 +207,15 @@ function hideTooltip(dataIndex: number) {
 }
 
 function onPointDragging(this: any, dataIndex: number, pos: number[]) {
-  data[dataIndex] = myChart.convertFromPixel("grid", pos);
+  data[dataIndex][1] = myChart.convertFromPixel("grid", pos)[1];
+  console.log('drag data[dataIndex] ==>', data[dataIndex])
   // getData(data);
-  // 出数据
   // Update data
   myChart.setOption({
-    series: [
-      {
-        id: "a",
-        data: data,
-      },
-    ],
+    series: [{
+      id: "a",
+      data: data,
+    }],
   });
 }
 
@@ -226,14 +240,14 @@ function initDragEnv() {
             let newX = Math.max(Math.min(params.event.offsetX, myChart.getWidth()), 0); // 限制拖拽点在容器内部
             let newY = Math.max(Math.min(params.event.offsetY, myChart.getHeight() * 0.85), 15); // 限制拖拽点在容器内部
 
-            // 处理边界情况，防止拖拽用力过猛，超出边界时，拖拽点消失
-            if (isNaN(newX)) {
-              newX = origin_dot[0];
-            }
-            if (isNaN(newY)) {
-              newY = origin_dot[1];
-            }
+            console.log('drag origin_dot ==>', origin_dot)
 
+            // 处理边界情况，防止拖拽用力过猛，超出边界时，拖拽点消失
+            if (isNaN(newX)) 
+              newX = origin_dot[0];
+            if (isNaN(newY)) 
+              newY = origin_dot[1];
+            
             // 固定 x 轴，拖拽点.x 始终 = 数值点.x
             onPointDragging(dataIndex, [
               ((this as any).x = origin_dot[0]),
@@ -255,7 +269,7 @@ function initDragEnv() {
 
 function initChart() {
   // myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
-  myChart.setOption(option);
+  myChart.setOption(options);
   nextTick(() => {
     initDragEnv();
     window.addEventListener("resize", updatePosition);
@@ -266,7 +280,9 @@ function initChart() {
 watch(
   () => props.max,
   (val) => {
-    option.yAxis.max = val;
+    if (options.yAxis){  
+      options.yAxis.max = val;
+    }
   },
   { immediate: true, deep: true }
 );
@@ -285,9 +301,9 @@ onMounted(() => {
     console.log("drag curData ===>", curData);
 
     data = [...curData.data];
-    if (Array.isArray(option.series)) {
-      option.series[0].data = [...curData.data];
-      console.log("option.series[0].data ===>", option.series[0].data);
+    if (Array.isArray(options.series)) {
+      options.series[0].data = [...curData.data];
+      console.log("option.series[0].data ===>", options.series[0].data);
     }
     // if (curData.date) {
     //   console.log('drag curData 有 date ==>')
@@ -298,7 +314,7 @@ onMounted(() => {
     //   console.log('drag curData 无 date ==>')
     //   option.yAxis.max = Math.ceil(curData.radio) * 2;  // coin.js 404 mock 假数据
     // }
-    console.log("drag option ===>", option);
+    console.log("drag options ===>", options);
     console.log("data ===>", data);
     console.log("myChart ===>", myChart);
     initChart();
