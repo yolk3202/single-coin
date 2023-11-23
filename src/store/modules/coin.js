@@ -37,11 +37,11 @@ export const useCoinStore = defineStore("coin", () => {
                                     [radio + 0.3,radio + 0.2,radio + 0.3,radio + 0.05],
                                 ],
                                 // date:"2023-12-01",
-                                x:[1672502400,1672516800,1672531200,1672545600,1672560000,1672574400,1672585200]
+                                x:[1672531200,1672545600,1672560000,1672574400,1674316740,1672502400,1672516800]
                               };
             coinLine.value = {
                                 data:[
-                                    [0,radio],[4,radio],[8,radio],[12,radio],[16,radio],[20,radio],[23,radio]
+                                    [0,radio],[4,radio],[8,radio],[12,radio],[16,radio],[20,radio],[24,radio]
                                 ],
                                 // date:"2023-12-01",
                                 radio:radio,

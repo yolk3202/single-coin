@@ -51,9 +51,14 @@ function getCoinList() {
   });
 }
 function getPrice() {
-  getCurCoinPrice({ symbol: queryParams.symbol }).then((res) => {
+  let option = {
+    symbol: queryParams.symbol,
+    date: queryParams.date
+  }
+  console.log('getPrice option ==>', option)
+  getCurCoinPrice(option).then((res) => {
     const { code, data, message } = res;
-    queryParams.radio = Number(data.last_price);
+    code === 200? queryParams.radio = Number(data.last_price): queryParams.radio = 10
     handleQuery();
   });
 }

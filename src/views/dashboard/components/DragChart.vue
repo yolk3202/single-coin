@@ -161,11 +161,34 @@ function updatePosition() {
 }
 
 function showTooltip(dataIndex: number) {
+  // 获取鼠标相对于容器的位置
+  const containerPosition = myChart.getDom().getBoundingClientRect();
+  const containerTop = containerPosition.top;
+  const containerHeight = containerPosition.height;
+
+  // 获取数据点的位置
+  const pointPosition = myChart.convertToPixel("grid", data[dataIndex]);
+  const pointTop = pointPosition[1];
+
+  // console.log('containerPosition drag ==>', containerPosition)
+  // console.log('pointPosition drag ==>', pointPosition)
+
+  // 计算展示框的位置
+  let tooltipTop;
+  if (pointTop - containerTop < containerHeight / 2) {  // 127 - 286 > 150 / 2
+    // 如果点位置靠下，展示框放在点上面
+    tooltipTop = pointTop - 70; // 调整具体的偏移量
+  } else {
+    // 否则展示框放在点下面
+    tooltipTop = pointTop + 10; // 调整具体的偏移量
+  }
+
   myChart.dispatchAction({
     type: "showTip",
     seriesIndex: 0,
     dataIndex: dataIndex,
-  });
+    position: [pointPosition[0], tooltipTop], // 设置展示框的位置
+  });  
 }
 
 function hideTooltip(dataIndex: number) {
