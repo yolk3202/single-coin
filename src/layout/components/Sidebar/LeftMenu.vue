@@ -7,9 +7,12 @@ import variables from "@/styles/variables.module.scss";
 
 import path from "path-browserify";
 import { isExternal } from "@/utils/index";
+import { usePermissionStore } from "@/store/modules/permission";
+
 
 const settingsStore = useSettingsStore();
 const appStore = useAppStore();
+const permissionStore = usePermissionStore();
 const currRoute = useRoute();
 const layout = computed(() => settingsStore.layout);
 const props = defineProps({
@@ -25,7 +28,6 @@ const props = defineProps({
     required: true,
   },
 });
-
 /**
  * 解析路径
  *
@@ -43,6 +45,7 @@ function resolvePath(routePath: string) {
   const fullPath = path.resolve(props.basePath, routePath); // 相对路径 → 绝对路径
   return fullPath;
 }
+onMounted(()=>permissionStore.generateRoutes( [] ))
 </script>
 <template>
   <el-menu
@@ -56,7 +59,7 @@ function resolvePath(routePath: string) {
     :mode="layout === 'top' ? 'horizontal' : 'vertical'"
   >
     <sidebar-item
-      v-for="route in menuList"
+      v-for="route in permissionStore.routes"
       :key="route.path"
       :item="route"
       :base-path="resolvePath(route.path)"

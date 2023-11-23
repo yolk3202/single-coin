@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { constantRoutes } from "@/router";
 import { store } from "@/store";
 import { listRoutes } from "@/api/menu";
+import { asyncRoutes } from "@/router/asyncRoute";
 
 const modules = import.meta.glob("../../views/**/**.vue");
 const Layout = () => import("@/layout/index.vue");
@@ -71,7 +72,8 @@ const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[]) => {
 // setup
 export const usePermissionStore = defineStore("permission", () => {
   // state
-  const routes = ref<RouteRecordRaw[]>([]);
+  let routes = ref<RouteRecordRaw[]>([]);
+  routes.value = asyncRoutes;
 
   // actions
   function setRoutes(newRoutes: RouteRecordRaw[]) {
@@ -84,33 +86,38 @@ export const usePermissionStore = defineStore("permission", () => {
    * @returns
    */
   function generateRoutes(roles: string[]) {
-    return new Promise<RouteRecordRaw[]>((resolve, reject) => {
-      // 接口获取所有路由
-      listRoutes()
-        .then(({ data: asyncRoutes }) => {
-          // 根据角色获取有访问权限的路由
-          const accessedRoutes = filterAsyncRoutes(asyncRoutes, roles);
-          setRoutes(accessedRoutes);
-          resolve(accessedRoutes);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
+    return new Promise((resolve, reject)=>{
+      const accessedRoutes = filterAsyncRoutes(asyncRoutes, roles);
+      setRoutes(accessedRoutes);
+      resolve(accessedRoutes);
+    })
+    // return new Promise<RouteRecordRaw[]>((resolve, reject) => {
+    //   // 接口获取所有路由
+    //   listRoutes()
+    //     .then(({ data: asyncRoutes }) => {
+    //       // 根据角色获取有访问权限的路由
+    //       const accessedRoutes = filterAsyncRoutes(asyncRoutes, roles);
+    //       setRoutes(accessedRoutes);
+    //       resolve(accessedRoutes);
+    //     })
+    //     .catch((error) => {
+    //       reject(error);
+    //     });
+    // });
   }
 
   /**
    * 混合模式左侧菜单
    */
-  const mixLeftMenu = ref<RouteRecordRaw[]>([]);
-  function getMixLeftMenu(activeTop: string) {
-    routes.value.forEach((item) => {
-      if (item.path === activeTop) {
-        mixLeftMenu.value = item.children || [];
-      }
-    });
-  }
-  return { routes, setRoutes, generateRoutes, getMixLeftMenu, mixLeftMenu };
+  // const mixLeftMenu = ref<RouteRecordRaw[]>([]);
+  // function getMixLeftMenu(activeTop: string) {
+  //   routes.value.forEach((item) => {
+  //     if (item.path === activeTop) {
+  //       mixLeftMenu.value = item.children || [];
+  //     }
+  //   });
+  // }
+  return { routes, setRoutes, generateRoutes/* , getMixLeftMenu, mixLeftMenu  */};
 });
 
 // 非setup
