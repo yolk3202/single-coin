@@ -35,13 +35,38 @@ export const useCoinStore = defineStore("coin", () => {
                                     [radio + 0.25,radio + 0.1,radio + 0.2,radio + 0.05],
                                     [radio + 0.05,radio + 0.1,radio + 0.01,radio + 0.3],
                                     [radio + 0.3,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.1,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.15,radio + 0.1,radio + 0.2,radio + 0.05],
+                                    [radio + 0.05,radio + 0.1,radio + 0.01,radio + 0.3],
+                                    [radio + 0.1,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.25,radio + 0.1,radio + 0.2,radio + 0.05],
+                                    [radio + 0.05,radio + 0.1,radio + 0.01,radio + 0.3],
+                                    [radio + 0.3,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.1,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.15,radio + 0.1,radio + 0.2,radio + 0.05],
+                                    [radio + 0.05,radio + 0.1,radio + 0.01,radio + 0.3],
+                                    [radio + 0.1,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.25,radio + 0.1,radio + 0.2,radio + 0.05],
+                                    [radio + 0.05,radio + 0.1,radio + 0.01,radio + 0.3],
+                                    [radio + 0.3,radio + 0.2,radio + 0.3,radio + 0.05],  
+                                    [radio + 0.1,radio + 0.2,radio + 0.3,radio + 0.05],
+                                    [radio + 0.25,radio + 0.1,radio + 0.2,radio + 0.05],
+                                    [radio + 0.05,radio + 0.1,radio + 0.01,radio + 0.3],
+                                    [radio + 0.3,radio + 0.2,radio + 0.3,radio + 0.05],                                                                                                           
                                 ],
                                 // date:"2023-12-01",
-                                x:[1672531200,1672545600,1672560000,1672574400,1674316740,1672502400,1672516800]
+                                x:[1672531200,1672534800,1672538400,1672542000,1672545600,1672549200, 
+                                   1672552800,1672556400,1672560000,1672563600,1672567200,1672570800,
+                                   1672574400,1672578000,1672581600,1672585200,1672588800,1672592400,
+                                   1672596000,1672599600,1672603200,1672606800,1672610400,1672614000,1672617540]
                               };
             coinLine.value = {
                                 data:[
-                                    [0,radio],[4,radio],[8,radio],[12,radio],[16,radio],[20,radio],[24,radio]
+                                    [0,radio],[1,radio],[2,radio],[3,radio],[4,radio],
+                                    [5,radio],[6,radio],[7,radio],[8,radio],[9,radio],
+                                    [10,radio],[11,radio],[12,radio],[13,radio],[14,radio],
+                                    [15,radio],[16,radio],[17,radio],[18,radio],[19,radio],
+                                    [20,radio],[21,radio],[22,radio],[23,radio],[24,radio]
                                 ],
                                 // date:"2023-12-01",
                                 radio:radio,

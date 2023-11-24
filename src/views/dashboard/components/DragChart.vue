@@ -110,18 +110,6 @@ options = {
   }],
 };
 
-function changeDate(val: any) {
-  console.log(val);
-  // console.log(form.date);
-  // 请求接口； todo
-}
-
-function getData(val: any) {
-  // console.log("====>val", val);
-  // console.log("====>data", data);
-  data = val;
-}
-
 // 保存，提交
 async function submitHandler() {
   console.log("提交 drag data===>", data);
@@ -133,7 +121,7 @@ async function submitHandler() {
     symbol: "ETHUSDT"
   };
 
-  watch(
+  watch( // 监听日期
     () => props.date,
     (val) => {
       options.date = val;
@@ -141,7 +129,7 @@ async function submitHandler() {
     { immediate: true, deep: true }
   );
 
-  watch(
+  watch( // 监听价格
     () => props.radio,
     (val) => {
       options.radio = val;
@@ -149,7 +137,7 @@ async function submitHandler() {
     { immediate: true, deep: true }
   );
 
-  watch(
+  watch( // 监听币种
     () => props.symbol,
     (val) => {
       options.symbol = val;
@@ -157,7 +145,7 @@ async function submitHandler() {
     { immediate: true, deep: true }
   );
 
-  console.log("提交 drag options ===>", options);
+  // console.log("提交 drag options ===>", options);
   await coinStore.sendCoinDataAction(options);
   console.log("提交 drag line ===>", coinLine.value);
 }
@@ -208,8 +196,7 @@ function hideTooltip(dataIndex: number) {
 
 function onPointDragging(this: any, dataIndex: number, pos: number[]) {
   data[dataIndex][1] = myChart.convertFromPixel("grid", pos)[1];
-  console.log('drag data[dataIndex] ==>', data[dataIndex])
-  // getData(data);
+  // console.log('drag data[dataIndex] ==>', data[dataIndex])
   // Update data
   myChart.setOption({
     series: [{
@@ -224,7 +211,7 @@ function initDragEnv() {
     // Add shadow circles (which is not visible) to enable drag.
     myChart.setOption({
       graphic: data.map(function (item, dataIndex) {
-        console.log('==> line item', item, dataIndex)
+        // console.log('==> line item', item, dataIndex)
         return {
           type: "circle",
           position: myChart.convertToPixel("grid", item),
@@ -240,7 +227,7 @@ function initDragEnv() {
             let newX = Math.max(Math.min(params.event.offsetX, myChart.getWidth()), 0); // 限制拖拽点在容器内部
             let newY = Math.max(Math.min(params.event.offsetY, myChart.getHeight() * 0.85), 15); // 限制拖拽点在容器内部
 
-            console.log('drag origin_dot ==>', origin_dot)
+            // console.log('drag origin_dot ==>', origin_dot)
 
             // 处理边界情况，防止拖拽用力过猛，超出边界时，拖拽点消失
             if (isNaN(newX)) 
@@ -291,19 +278,19 @@ onMounted(() => {
   myChart = echarts.init(document.getElementById(props.id) as HTMLDivElement);
 
   watch(coinLine, () => {
-    console.log('drag line ==>', coinLine.value);
+    // console.log('drag line ==>', coinLine.value);
     let curData = JSON.parse(JSON.stringify(coinLine.value));
     // 求 y 轴最大值，最小值
     const y_1 = curData.data.map((item: any[]) => item[1]);
     const y_max = Math.max(...y_1);
     const y_min = Math.min(...y_1);
-    console.log("drag y y_min y_max ===>", y_min, y_max);
-    console.log("drag curData ===>", curData);
+    // console.log("drag y y_min y_max ===>", y_min, y_max);
+    // console.log("drag curData ===>", curData);
 
     data = [...curData.data];
     if (Array.isArray(options.series)) {
       options.series[0].data = [...curData.data];
-      console.log("option.series[0].data ===>", options.series[0].data);
+      // console.log("option.series[0].data ===>", options.series[0].data);
     }
     // if (curData.date) {
     //   console.log('drag curData 有 date ==>')
@@ -314,9 +301,9 @@ onMounted(() => {
     //   console.log('drag curData 无 date ==>')
     //   option.yAxis.max = Math.ceil(curData.radio) * 2;  // coin.js 404 mock 假数据
     // }
-    console.log("drag options ===>", options);
-    console.log("data ===>", data);
-    console.log("myChart ===>", myChart);
+    // console.log("drag options ===>", options);
+    // console.log("data ===>", data);
+    // console.log("myChart ===>", myChart);
     initChart();
   });
 });

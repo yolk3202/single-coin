@@ -23,6 +23,7 @@ let coinList = ref([]); // 币种列表
 
 function changeDate(val: any) {
   console.log(val);
+  getPrice();
   // 请求接口； todo
 }
 function selectCoinType() {
