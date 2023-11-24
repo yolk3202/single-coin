@@ -2,9 +2,7 @@ import axios, { InternalAxiosRequestConfig, AxiosResponse } from "axios";
 
 // 创建 axios 实例
 const service = axios.create({
-  // baseURL: "http://54.179.30.22:30000",
-  // baseURL: "http://127.0.0.1:4523",
-  baseURL: import.meta.env.VITE_APP_BASE_API_1,
+  baseURL: import.meta.env.VITE_APP_TARGET_URL_1, // http://54.179.30.22:30000
   timeout: 50000,
   headers: { "Content-Type": "application/json;charset=utf-8" },
 });
