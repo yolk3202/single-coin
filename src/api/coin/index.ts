@@ -1,17 +1,18 @@
 import requestApi from "@/utils/requestApi";
 import { AxiosPromise } from "axios";
 import { CoinDataOptionType,CurCoinPriceType } from "./types";
+import config from "@/config";
+import { AxiosRequestConfig } from "axios";
 /**
  * 拉取两个 线图 数据
  */
+
 export function getCoinDataApi(options: CoinDataOptionType): AxiosPromise {
   return requestApi({
-    // url: "/m1/3538235-0-default/test_get_lines",
-    // url: "/m1/3538235-0-default/fetch_ohlcv",
-    url: "/api/fetch_ohlcv",
+    url: config.api.FETCH_OHLCV,
     method: "get",
     params: options,
-  });
+  } as AxiosRequestConfig);
 }
 
 /**
@@ -19,26 +20,31 @@ export function getCoinDataApi(options: CoinDataOptionType): AxiosPromise {
  */
 export function sendCoinDataApi(options: any): AxiosPromise {
   return requestApi({
-    // url: "/m1/3538235-0-default/test_generate_kline",
-    // url: "/m1/3538235-0-default/create_ohlcv",
-    url: "/api/create_ohlcv",
+    url: config.api.CREATE_OHLCV,
     method: "post",
     data: options,
-  });
+  } as AxiosRequestConfig<any>);
 }
 
 // 获取交易货币列表
 export function getCoinTypeList(): AxiosPromise {
   return requestApi({
-    url: "/api/get_exchange_info",
+    url: config.api.GET_EXCHANGE_INFO,
     method: "get",
-  });
+  } as AxiosRequestConfig<any>);
 }
 // 获取当前交易货币价格
 export function getCurCoinPrice(options: CurCoinPriceType): AxiosPromise {
   return requestApi({
-    url: "/api/get_last_price",
+    url: config.api.GET_NEW_PRICE,
     method: "get",
     params: options,
-  });
+  } as AxiosRequestConfig<any>);
+}
+
+export default {
+  getCoinDataApi,
+  sendCoinDataApi,
+  getCoinTypeList,
+  getCurCoinPrice
 }

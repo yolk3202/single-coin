@@ -7,6 +7,7 @@
       :layout="layout"
       :page-sizes="pageSizes"
       :total="total"
+      :page-count="pageCount"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
@@ -18,6 +19,11 @@ import { PropType } from "vue";
 import { scrollTo } from "@/utils/scroll-to";
 
 const props = defineProps({
+  pageCount:{
+    required: true,
+    type: Number as PropType<number>,
+    default: 0,
+  },
   total: {
     required: true,
     type: Number as PropType<number>,
