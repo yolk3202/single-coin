@@ -1,8 +1,10 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosRequestConfig } from "axios";
+import config from "@/config";
+console.log('...config', config)
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_APP_TARGET_URL_1, // http://54.179.30.22:30000
+  baseURL: config.baseUrl,
   timeout: 50000,
   headers: { "Content-Type": "application/json;charset=utf-8" },
 });
@@ -10,13 +12,7 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // const userStore = useUserStoreHook();
-    // if (userStore.token) {
-    //   config.headers.Authorization = userStore.token;
-    // }
-
     console.log("请求拦截器");
-
     return config;
   },
   (error: any) => {
@@ -65,5 +61,23 @@ service.interceptors.response.use(
   }
 );
 
+function dealWidthParams(data: { [key: string]: any } | null | undefined) {
+  let config =  data && data.value ? data.value : data;
+  for (let key in config) {
+    if (
+      config[key] === "" ||
+      config[key] === null ||
+      config[key] === undefined ||
+      (Array.isArray(config[key]) && !config[key].length)
+    ) {
+      delete config[key];
+    }
+  }
+  return config;
+}
 // 导出 axios 实例
-export default service;
+export default function (reqConfig: AxiosRequestConfig<any>) {
+  reqConfig.data =reqConfig.data && dealWidthParams(reqConfig.data);
+  reqConfig.params =reqConfig.params&& dealWidthParams(reqConfig.params);
+  return service(reqConfig);
+}
