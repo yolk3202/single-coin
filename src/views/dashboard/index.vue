@@ -30,27 +30,16 @@ function selectCoinType() {
   getPrice();
 }
 
-// demo
-function demoApi() {
-  return new Promise((resolve, reject) => {
-    const list = [
-      { name: "ETH/USDT", initPrice: 1000 },
-      { name: "ETH/USDT1", initPrice: 200 },
-      { name: "ETH/USDT2", initPrice: 100 },
-    ];
-    resolve(list);
-  });
-}
-
 function getCoinList() {
   getCoinTypeList().then((res) => {
     console.log(res);
     const { code, data, message } = res;
     coinList.value = data || [];
-    queryParams.symbol = data[0];
+    data.includes("DOGEUSDT") ? queryParams.symbol = "DOGEUSDT" : queryParams.symbol = data[0];
     getPrice();
   });
 }
+
 function getPrice() {
   let option = {
     symbol: queryParams.symbol,
