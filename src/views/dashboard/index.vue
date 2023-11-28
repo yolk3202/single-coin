@@ -24,7 +24,6 @@ let coinList = ref([]); // 币种列表
 function changeDate(val: any) {
   console.log(val);
   getPrice();
-  // 请求接口； todo
 }
 function selectCoinType() {
   getPrice();
@@ -46,11 +45,13 @@ function getPrice() {
     date: queryParams.date
   }
   console.log('getPrice option ==>', option)
-  getCurCoinPrice(option).then((res) => {
-    const { code, data, message } = res;
-    code === 200? queryParams.radio = Number(data.last_price): queryParams.radio = 10
-    handleQuery();
-  });
+  // getCurCoinPrice(option).then((res) => {
+  //   const { code, data, message } = res;
+  //   code === 200? queryParams.radio = Number(data.last_price): queryParams.radio = 10
+  //
+  // });
+  queryParams.radio = 100
+  handleQuery();
 }
 
 async function handleQuery() {
@@ -101,9 +102,9 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="价格" prop="status">
-          <el-input-number v-model="queryParams.radio" size="large" />
-        </el-form-item>
+<!--        <el-form-item label="百分比" prop="status">-->
+<!--          <el-input-number v-model="queryParams.radio" size="large" />-->
+<!--        </el-form-item>-->
         <el-form-item>
           <el-button class="filter-item" type="primary" @click="handleQuery">
             <i-ep-search />
@@ -112,120 +113,15 @@ onMounted(() => {
         </el-form-item>
       </el-form>
     </div>
-    <!-- github角标 -->
-    <!-- <github-corner class="github-corner" /> -->
-
-    <!-- 用户信息 -->
-    <!-- <el-row class="mb-8">
-      <el-card class="w-full">
-        <div class="flex justify-between flex-wrap">
-          <div class="flex items-center">
-            <img
-              class="user-avatar"
-              :src="userStore.user.avatar + '?imageView2/1/w/80/h/80'"
-            />
-            <span class="ml-[10px] text-[16px]">
-              {{ userStore.user.nickname }}
-            </span>
-          </div>
-
-          <div class="leading-[40px]">
-            {{ greetings }}
-          </div>
-
-          <div class="space-x-2 flex items-center justify-end">
-            <el-link
-              target="_blank"
-              type="danger"
-              href="https://blog.csdn.net/u013737132/article/details/130191394"
-              >💥官方从零到一文档</el-link
-            >
-            <el-divider direction="vertical" />
-            <el-link
-              target="_blank"
-              type="success"
-              href="https://gitee.com/youlaiorg"
-              >Gitee</el-link
-            >
-            <el-divider direction="vertical" />
-            <el-link
-              target="_blank"
-              type="primary"
-              href="https://github.com/youlaitech"
-              >GitHub
-            </el-link>
-          </div>
-        </div>
-      </el-card>
-    </el-row> -->
-
-    <!-- 数据卡片 -->
-    <!-- <el-row :gutter="40" class="mb-4">
-      <el-col :xs="24" :sm="12" :lg="6" class="mb-4">
-        <div class="data-box">
-          <div class="p-3 rounded">
-            <svg-icon icon-class="visit" size="3em" />
-          </div>
-          <div class="flex flex-col space-y-3">
-            <div class="text-[var(--el-text-color-secondary)]">访问数</div>
-            <div class="text-lg text-right">
-              {{ Math.round(visitCountOutput) }}
-            </div>
-          </div>
-        </div>
-      </el-col>
-
-      <!消息数-->
-    <!-- <el-col :xs="24" :sm="12" :lg="6" class="mb-4">
-        <div class="data-box">
-          <div class="p-3 rounded">
-            <svg-icon icon-class="message" size="3em" />
-          </div>
-          <div class="flex flex-col space-y-3">
-            <div class="text-[var(--el-text-color-secondary)]">消息数</div>
-            <div class="text-lg text-right">
-              {{ Math.round(messageCountOutput) }}
-            </div>
-          </div>
-        </div>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :lg="6" class="mb-4">
-        <div class="data-box">
-          <div class="p-3 rounded">
-            <svg-icon icon-class="money" size="3em" />
-          </div>
-          <div class="flex flex-col space-y-3">
-            <div class="text-[var(--el-text-color-secondary)]">收入金额</div>
-            <div class="text-lg text-right">
-              {{ Math.round(amountOutput) }}
-            </div>
-          </div>
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="6" class="mb-2">
-        <div class="data-box">
-          <div class="p-3 rounded">
-            <svg-icon icon-class="cart" size="3em" />
-          </div>
-          <div class="flex flex-col space-y-3">
-            <div class="text-[var(--el-text-color-secondary)]">订单数</div>
-            <div class="text-lg text-right">
-              {{ Math.round(orderCountOutput) }}
-            </div>
-          </div>
-        </div>
-      </el-col>
-    </el-row> -->
 
     <!-- Echarts 图表 -->
     <el-row :gutter="40">
       <el-col :sm="24" :lg="24" class="mb-2">
         <DragChart
           id="DragChart"
-          height="150px"
+          height="500px"
           width="100%"
-          :max="queryParams.radio * 2"
+          :max="queryParams.radio * 10"
           :date="queryParams.date"
           :radio="queryParams.radio"
           :symbol="queryParams.symbol"
@@ -233,23 +129,6 @@ onMounted(() => {
         />
       </el-col>
 
-      <!-- <el-col :xs="24" :sm="12" :lg="8" class="mb-2">
-        <PieChart
-          id="pieChart"
-          height="400px"
-          width="100%"
-          class="bg-[var(--el-bg-color-overlay)]"
-        />
-      </el-col> -->
-
-      <!-- <el-col :xs="24" :sm="12" :lg="8" class="mb-2">
-        <RadarChart
-          id="radarChart"
-          height="400px"
-          width="100%"
-          class="bg-[var(--el-bg-color-overlay)]"
-        />
-      </el-col> -->
     </el-row>
 
     <!-- K 线图 -->
@@ -257,9 +136,9 @@ onMounted(() => {
       <el-col :sm="24" :lg="24" class="mb-2">
         <CandleChart
           id="CandleChart"
-          height="200px"
+          height="300px"
           width="100%"
-          :max="queryParams.radio * 2"
+          :max="queryParams.radio * 10"
           class="bg-[var(--el-bg-color-overlay)]"
         />
       </el-col>

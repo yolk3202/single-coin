@@ -16,10 +16,11 @@
 <script setup lang="ts">
 import * as echarts from "echarts";
 
-import { storeToRefs } from "pinia";
-import { useCoinStore } from "@/store/modules/coin";
+import {storeToRefs} from "pinia";
+import {useCoinStore} from "@/store/modules/coin";
+
 const coinStore = useCoinStore();
-const { coinLine } = storeToRefs(coinStore);
+const {coinLine} = storeToRefs(coinStore);
 
 const props = defineProps({
   id: {
@@ -73,7 +74,52 @@ options = {
   // title: {text: "demo",},
   tooltip: {
     triggerOn: "none",
+    shared: true,
     formatter: function (params: any) {
+      console.log(JSON.stringify(params, null, 2));
+      console.log(data)
+      var index = params['dataIndex']
+      var y = data[index][1]
+      if (index == 0) {
+        return ("时间: " + index + ':00'+ "<br> 当前值：" + y );
+      } else {
+        var preIndex = index - 1
+        var pre_y = data[preIndex][1]
+
+        console.log("preIndex=" + y)
+        var gap = y - pre_y
+        console.log("gap=" + gap)
+        if (gap == 0) {
+          return "时间: " + index + ":00 <br>价格和上个点持平"
+        } else {
+          console.log("前一个值=" + pre_y)
+          console.log("比例=" + (gap / pre_y))
+          var radio = ((gap / pre_y) * 100).toFixed(2)
+          return (
+            "时间: " + index + ':00' +
+            "<br> 当前值：" + y +
+            "<br>比上一个点的涨跌比例: " + radio + "%"
+          );
+        }
+
+      }
+
+      // var currentData = params[0].data;
+      // var previousData;
+      //
+      // // 检查是否有前一个数据项的信息
+      // if (params[1] && params[1].data) {
+      //   previousData = params[1].data;
+      // } else {
+      //   previousData = 0;
+      // }
+      //
+      // var ratio = (currentData / previousData * 100).toFixed(2) + '%';
+      //
+      // return '当前值: ' + currentData + '<br/>'
+      //   + '前一个值: ' + previousData + '<br/>'
+      //   + '比例: ' + ratio;
+
       return (
         "时间: " +
         params.data[0] + ':00' +
@@ -96,13 +142,13 @@ options = {
       interval: 0,
       alignWithLabel: true
     },
-    axisLine: { onZero: true },
+    axisLine: {onZero: true},
   },
   yAxis: {
     min: 0,
     max: 10,
     type: "value",
-    axisLine: { onZero: true },
+    axisLine: {onZero: true},
   },
 
   series: [{
@@ -119,7 +165,7 @@ const isSaving = ref(false); // 响应式数据，用于控制保存按钮的禁
 // 保存，提交
 async function submitHandler() {
   console.log("提交 drag data===>", data);
-  
+
   let options = {
     date: "",
     data,
@@ -132,7 +178,7 @@ async function submitHandler() {
     (val) => {
       options.date = val;
     },
-    { immediate: true, deep: true }
+    {immediate: true, deep: true}
   );
 
   watch( // 监听价格
@@ -140,7 +186,7 @@ async function submitHandler() {
     (val) => {
       options.radio = val;
     },
-    { immediate: true, deep: true }
+    {immediate: true, deep: true}
   );
 
   watch( // 监听币种
@@ -148,7 +194,7 @@ async function submitHandler() {
     (val) => {
       options.symbol = val;
     },
-    { immediate: true, deep: true }
+    {immediate: true, deep: true}
   );
 
   isSaving.value = true; // 禁用保存按钮
@@ -198,7 +244,7 @@ function showTooltip(dataIndex: number) {
     seriesIndex: 0,
     dataIndex: dataIndex,
     position: [pointPosition[0], tooltipTop], // 设置展示框的位置
-  });  
+  });
 }
 
 function hideTooltip(dataIndex: number) {
@@ -243,11 +289,11 @@ function initDragEnv() {
             // console.log('drag origin_dot ==>', origin_dot)
 
             // 处理边界情况，防止拖拽用力过猛，超出边界时，拖拽点消失
-            if (isNaN(newX)) 
+            if (isNaN(newX))
               newX = origin_dot[0];
-            if (isNaN(newY)) 
+            if (isNaN(newY))
               newY = origin_dot[1];
-            
+
             // 固定 x 轴，拖拽点.x 始终 = 数值点.x
             onPointDragging(dataIndex, [
               ((this as any).x = origin_dot[0]),
@@ -280,11 +326,11 @@ function initChart() {
 watch(
   () => props.max,
   (val) => {
-    if (options.yAxis){  
+    if (options.yAxis) {
       options.yAxis.max = val;
     }
   },
-  { immediate: true, deep: true }
+  {immediate: true, deep: true}
 );
 
 onMounted(() => {
