@@ -1,22 +1,18 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosRequestConfig } from "axios";
+import config from "@/config";
+console.log('...config', config)
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_APP_TARGET_URL_1, // http://54.179.30.22:30000
-  timeout: 50000,
+  baseURL: config.baseUrl,
+  timeout: 30000,
   headers: { "Content-Type": "application/json;charset=utf-8" },
 });
 
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // const userStore = useUserStoreHook();
-    // if (userStore.token) {
-    //   config.headers.Authorization = userStore.token;
-    // }
-
     console.log("请求拦截器");
-
     return config;
   },
   (error: any) => {
@@ -27,6 +23,7 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
+    
     console.log("all response ==>", response);
     const { code, message } = response.data;
     if (code === 200) {
@@ -46,6 +43,10 @@ service.interceptors.response.use(
     return Promise.reject(new Error(message || "Error"));
   },
   (error: any) => {
+    if (error.code === 'ECONNABORTED') {
+      // 如果错误是由于超时引起的，显示一个提示
+      ElMessage.error('接口超时，请刷新页面或者重新请求')
+    }
     if (error.response.data) {
       const { code, message } = error.response.data;
       // token 过期,重新登录
@@ -65,5 +66,23 @@ service.interceptors.response.use(
   }
 );
 
+function dealWidthParams(data: { [key: string]: any } | null | undefined) {
+  let config =  data && data.value ? data.value : data;
+  for (let key in config) {
+    if (
+      config[key] === "" ||
+      config[key] === null ||
+      config[key] === undefined ||
+      (Array.isArray(config[key]) && !config[key].length)
+    ) {
+      delete config[key];
+    }
+  }
+  return config;
+}
 // 导出 axios 实例
-export default service;
+export default function (reqConfig: AxiosRequestConfig<any>) {
+  reqConfig.data =reqConfig.data && dealWidthParams(reqConfig.data);
+  reqConfig.params =reqConfig.params&& dealWidthParams(reqConfig.params);
+  return service(reqConfig);
+}
