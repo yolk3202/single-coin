@@ -5,14 +5,20 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "vite serve --mode development",
+    "dev:mock": "cross-env NODE_ENV=development vite serve --mode mock",
+    "dev:test": "cross-env NODE_ENV=development vite serve --mode test",
+    "dev:online": "cross-env NODE_ENV=development vite serve --mode online",
+    "build:mock": "cross-env NODE_ENV=production vite build --mode mock",
+    "build:test": "cross-env NODE_ENV=production vite build --mode test",
+    "build:online": "cross-env NODE_ENV=production vite build --mode online",
+    "build": "vite build --mode production",
     "build:prod": "vite build --mode production && vue-tsc --noEmit",
     "prepare": "husky install",
     "lint:eslint": "eslint  --fix --ext .ts,.js,.vue ./src ",
     "lint:prettier": "prettier --write \"**/*.{js,cjs,ts,json,tsx,css,less,scss,vue,html,md}\"",
     "lint:stylelint": "stylelint  \"**/*.{css,scss,vue}\" --fix",
     "lint:lint-staged": "lint-staged",
-    "commit": "git-cz",
-    "build": "vite build --mode production"
+    "commit": "git-cz"
   },
   "config": {
     "commitizen": {
@@ -82,6 +88,7 @@
     "@vitejs/plugin-vue-jsx": "^3.0.2",
     "autoprefixer": "^10.4.14",
     "commitizen": "^4.3.0",
+    "cross-env": "^7.0.3",
     "cz-git": "^1.6.1",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",

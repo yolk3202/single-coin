@@ -65,13 +65,13 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         //       env.VITE_APP_TARGET_BASE_API
         //     ),
         // },
-        [env.VITE_APP_BASE_API_1]: {
+        [env.VITE_APP_BASE_API]: {
           changeOrigin: true,
-          target: env.VITE_APP_TARGET_URL_1,
+          target: env.VITE_APP_TARGET_URL,
           rewrite: (path) =>
             path.replace(
-              new RegExp("^" + env.VITE_APP_BASE_API_1),
-              env.VITE_APP_TARGET_BASE_API_1
+              new RegExp("^" + env.VITE_APP_BASE_API),
+              env.VITE_APP_TARGET_BASE_API
             ),
         },
       },
