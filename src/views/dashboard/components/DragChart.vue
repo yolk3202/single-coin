@@ -5,7 +5,7 @@
       <el-row>
         <el-col :span="12">拖拽折线图 ( UTC 时间 )</el-col>
         <el-col :span="12" style="text-align: right">
-          <el-button type="primary" @click="submitHandler">保存</el-button>
+          <el-button type="primary" :disabled="isSaving" @click="submitHandler">保存</el-button>
         </el-col>
       </el-row>
     </template>
@@ -66,10 +66,7 @@ const symbolSize = 12;
 
 let data = [
   [0, 9.1], [1, 2.3], [2, 3.2], [3, 0],
-  [4, 4.1], [5, 6.5], [6, 3], [7, 8],
-  // [8,10],[9,2],[10,1],[11,1],[12,1],[13,6],
-  // [14,8],[15,5],[16,4],[17,7],[18,2],[19,8],
-  // [20,5],[21,8],[22,9],[23,2],
+  [4, 4.1], [5, 6.5], [6, 3], [7, 8]
 ];
 
 options = {
@@ -78,10 +75,12 @@ options = {
     triggerOn: "none",
     formatter: function (params: any) {
       return (
-        "X: " +
-        params.data[0].toFixed(2) +
-        "<br>Y: " +
-        params.data[1].toFixed(2)
+        "时间: " +
+        params.data[0] + ':00' +
+        "<br>百分比: " +
+        ((params.data[1] * 2 / props.max - 1) * 100).toFixed(4) + '%' +
+        "<br>预估价格: " +
+        params.data[1].toFixed(4)
       );
     },
   },
@@ -92,7 +91,11 @@ options = {
   },
   xAxis: {
     id: "timeX",
-    type: "value",
+    type: "category",
+    axisTick: {
+      interval: 0,
+      alignWithLabel: true
+    },
     axisLine: { onZero: true },
   },
   yAxis: {
@@ -101,6 +104,7 @@ options = {
     type: "value",
     axisLine: { onZero: true },
   },
+
   series: [{
     id: "a",
     type: "line",
@@ -109,6 +113,8 @@ options = {
     data: data,
   }],
 };
+
+const isSaving = ref(false); // 响应式数据，用于控制保存按钮的禁用状态
 
 // 保存，提交
 async function submitHandler() {
@@ -145,8 +151,15 @@ async function submitHandler() {
     { immediate: true, deep: true }
   );
 
-  // console.log("提交 drag options ===>", options);
-  await coinStore.sendCoinDataAction(options);
+  isSaving.value = true; // 禁用保存按钮
+
+  try {
+    await coinStore.sendCoinDataAction(options);
+  } catch (error) {
+    console.log('drag 提交保存 失败==>', error)
+  } finally {
+    isSaving.value = false; // 启用保存按钮
+  }
   console.log("提交 drag line ===>", coinLine.value);
 }
 
@@ -284,26 +297,11 @@ onMounted(() => {
     const y_1 = curData.data.map((item: any[]) => item[1]);
     const y_max = Math.max(...y_1);
     const y_min = Math.min(...y_1);
-    // console.log("drag y y_min y_max ===>", y_min, y_max);
-    // console.log("drag curData ===>", curData);
 
     data = [...curData.data];
     if (Array.isArray(options.series)) {
       options.series[0].data = [...curData.data];
-      // console.log("option.series[0].data ===>", options.series[0].data);
     }
-    // if (curData.date) {
-    //   console.log('drag curData 有 date ==>')
-    //   option.yAxis.min = Math.ceil(y_min * 0.9);
-    //   option.yAxis.max = Math.ceil(y_max * 1.1);
-    // }
-    // else {
-    //   console.log('drag curData 无 date ==>')
-    //   option.yAxis.max = Math.ceil(curData.radio) * 2;  // coin.js 404 mock 假数据
-    // }
-    // console.log("drag options ===>", options);
-    // console.log("data ===>", data);
-    // console.log("myChart ===>", myChart);
     initChart();
   });
 });
