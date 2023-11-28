@@ -182,8 +182,8 @@ onMounted(() => {
             v-model="queryParams.start_time"
             type="datetime"
             placeholder="选择开始时间"
-            format="YYYY/MM/DD hh:mm:ss"
-            value-format="YYYY/MM/DD hh:mm:ss"
+            format="YYYY-MM-DD hh:mm:ss"
+            value-format="YYYY-MM-DD hh:mm:ss"
           />
         </el-form-item>
         <el-form-item label="结束时间">
@@ -195,8 +195,8 @@ onMounted(() => {
             :disabled-hours="setEndTimeDisabledHour"
             :disabled-minutes="setEndTimeDisabledMinute" 
             :disabled-seconds="setEndTimeDisabledSecond"
-            format="YYYY/MM/DD hh:mm:ss"
-            value-format="YYYY/MM/DD hh:mm:ss"
+            format="YYYY-MM-DD hh:mm:ss"
+            value-format="YYYY-MM-DD hh:mm:ss"
           />
         </el-form-item>
         <el-form-item>
