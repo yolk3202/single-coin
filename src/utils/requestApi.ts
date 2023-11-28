@@ -5,7 +5,7 @@ console.log('...config', config)
 // 创建 axios 实例
 const service = axios.create({
   baseURL: config.baseUrl,
-  timeout: 50000,
+  timeout: 30000,
   headers: { "Content-Type": "application/json;charset=utf-8" },
 });
 
@@ -23,6 +23,7 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
+    
     console.log("all response ==>", response);
     const { code, message } = response.data;
     if (code === 200) {
@@ -42,6 +43,10 @@ service.interceptors.response.use(
     return Promise.reject(new Error(message || "Error"));
   },
   (error: any) => {
+    if (error.code === 'ECONNABORTED') {
+      // 如果错误是由于超时引起的，显示一个提示
+      ElMessage.error('接口超时，请刷新页面或者重新请求')
+    }
     if (error.response.data) {
       const { code, message } = error.response.data;
       // token 过期,重新登录
