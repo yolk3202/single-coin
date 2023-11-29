@@ -284,7 +284,7 @@ function initDragEnv() {
           ondrag: function (params: any) {
             const origin_dot = myChart.convertToPixel("grid", data[dataIndex]);
             let newX = Math.max(Math.min(params.event.offsetX, myChart.getWidth()), 0); // 限制拖拽点在容器内部
-            let newY = Math.max(Math.min(params.event.offsetY, myChart.getHeight() * 0.85), 15); // 限制拖拽点在容器内部
+            let newY = Math.max(Math.min(params.event.offsetY, myChart.getHeight() * 0.85), myChart.getHeight() * 0.1); // 限制拖拽点在容器内部
 
             // console.log('drag origin_dot ==>', origin_dot)
 
