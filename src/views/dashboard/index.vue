@@ -5,6 +5,7 @@ import { formatDateToYMD } from "@/utils/utils";
 import { getCoinTypeList, getCurCoinPrice } from "@/api/coin";
 
 import { useCoinStore } from "@/store/modules/coin";
+import {array} from "fast-glob/out/utils";
 const coinStore = useCoinStore();
 
 defineOptions({
@@ -18,6 +19,8 @@ const queryParams = reactive({
   date: "",
   symbol: "",
   radio: 0,
+  utcTime:'',
+  chinaTime:''
 });
 let coinList = ref([]); // 币种列表
 
@@ -54,6 +57,31 @@ function getPrice() {
   handleQuery();
 }
 
+const generateUtcTime = async () => {
+  while (true) {
+    const now = new Date();
+    // 获取UTC时间
+    var op = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'UTC'
+    }
+    queryParams.utcTime = now.toLocaleString('en-US', op);
+
+    // 获取中国时间（北京时区为东八区）
+    const chinaTimezoneOffset = 8 * 60;
+    const chinaTime = new Date(now.getTime() + chinaTimezoneOffset * 60 * 1000);
+    queryParams.chinaTime = chinaTime.toLocaleString('en-US', op);
+    // 等待 1 秒
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+};
+
+
 async function handleQuery() {
   // 请求接口； todo
   let { date, symbol, radio } = queryParams;
@@ -65,7 +93,9 @@ async function handleQuery() {
   await coinStore.getCoinDataAction(options);
 }
 
+
 onMounted(() => {
+  generateUtcTime();
   // 获取币种接口
   getCoinList();
   // 初始化时间
@@ -77,7 +107,10 @@ onMounted(() => {
   <div class="dashboard-container">
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="日期" prop="keywords">
+        <h1>图表中X为轴位UTC 时间</h1>
+        <p>UTC 时间: {{queryParams.utcTime }}</p>
+        <p>中国时间: {{ queryParams.chinaTime }}</p>
+        <el-form-item label="UTC日期" prop="keywords">
           <el-date-picker
             v-model="queryParams.date"
             type="date"
