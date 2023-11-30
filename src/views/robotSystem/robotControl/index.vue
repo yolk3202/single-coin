@@ -46,7 +46,7 @@ function getCoinList() {
   robotSystemApi.getCoinTypeList().then((res) => {
     const { code, data, message } = res;
     coinList.value = data || [];
-    queryParams.symbol = 'DOGEUSDT';
+    data.includes("BTKUSDT") ? queryParams.symbol = "BTKUSDT" : queryParams.symbol = data[0];
     getRobotList();
   });
 }

@@ -37,7 +37,7 @@ function getCoinList() {
     console.log(res);
     const { code, data, message } = res;
     coinList.value = data || [];
-    data.includes("DOGEUSDT") ? queryParams.symbol = "DOGEUSDT" : queryParams.symbol = data[0];
+    data.includes("BTKUSDT") ? queryParams.symbol = "BTKUSDT" : queryParams.symbol = data[0];
     getPrice();
   });
 }
@@ -107,7 +107,7 @@ onMounted(() => {
   <div class="dashboard-container">
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <h1>图表中X为轴位UTC 时间</h1>
+        <h1>图表中 X 轴为 UTC 时间</h1>
         <p>UTC 时间: {{queryParams.utcTime }}</p>
         <p>中国时间: {{ queryParams.chinaTime }}</p>
         <el-form-item label="UTC日期" prop="keywords">
@@ -154,7 +154,7 @@ onMounted(() => {
           id="DragChart"
           height="500px"
           width="100%"
-          :max="queryParams.radio * 10"
+          :max="queryParams.radio * 2"
           :date="queryParams.date"
           :radio="queryParams.radio"
           :symbol="queryParams.symbol"
@@ -171,7 +171,7 @@ onMounted(() => {
           id="CandleChart"
           height="300px"
           width="100%"
-          :max="queryParams.radio * 10"
+          :max="queryParams.radio * 2"
           class="bg-[var(--el-bg-color-overlay)]"
         />
       </el-col>
