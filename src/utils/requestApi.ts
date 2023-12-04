@@ -84,5 +84,12 @@ function dealWidthParams(data: { [key: string]: any } | null | undefined) {
 export default function (reqConfig: AxiosRequestConfig<any>) {
   reqConfig.data =reqConfig.data && dealWidthParams(reqConfig.data);
   reqConfig.params =reqConfig.params&& dealWidthParams(reqConfig.params);
+  // const token = localStorage.getItem("token");
+  console.log('reqConfig.url', reqConfig.url)
+  // 判断当前接口是否需要 添加自定义头部
+  if(!config.noTokenList.includes(reqConfig.url as string)){
+    const token = localStorage.getItem("token")|| '1243';
+    reqConfig.headers = { ...reqConfig.headers, Authorization: `Bearer ${token}` }
+  }
   return service(reqConfig);
 }

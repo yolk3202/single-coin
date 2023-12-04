@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-import { loginApi, logoutApi } from "@/api/auth";
+import { loginApi, logoutApi, getUserInfoApi, loginWithAccountApi } from "@/api/auth";
 import { getUserInfo } from "@/api/user";
 import { resetRouter } from "@/router";
 import { store } from "@/store";
@@ -15,7 +15,7 @@ export const useUserStore = defineStore("user", () => {
     roles: [],
     perms: [],
   };
-
+  const userInfo: Object = {}
   const token = useStorage("accessToken", "");
 
   /**
@@ -81,6 +81,40 @@ export const useUserStore = defineStore("user", () => {
     token.value = "";
     Object.assign(user, { roles: [], perms: [] });
   }
+
+  function getUserInfo() {
+    return new Promise<UserInfo>((resolve, reject) => {
+      getUserInfoApi({})
+      .then((response) => {
+        const { code, data } = response.data;
+        if (code === 200) {
+          Object.assign(user, { ...data });
+          resolve(data);
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      })
+    });
+  }
+
+  function loginWithCount(options: any) {
+    return new Promise<any>((resolve, reject) => {
+      loginWithAccountApi(options)
+        .then((res)=>{
+          const { code, data } = res.data;
+          if (code === 200) {
+            token.value = data.token;
+            Object.assign(userInfo, { ...data.user });
+            resolve(res);
+          }
+        })
+        .catch((error) => {
+          reject(error);
+        })
+    });
+  }
+
   return {
     token,
     user,
@@ -88,6 +122,8 @@ export const useUserStore = defineStore("user", () => {
     getInfo,
     logout,
     resetStore,
+    getUserInfo,
+    loginWithCount
   };
 });
 

@@ -4,7 +4,10 @@ import api from './api'
 
 const baseUrl = import.meta.env.VITE_APP_TARGET_URL;
 const serverDomain = import.meta.env.VITE_APP_TARGET_URL;
-
+const noTokenList = [
+  api.LOGIN,
+  api.REGISTER,
+]
 
 export default (()=>{
   const mode = import.meta.env.MODE;
@@ -17,6 +20,7 @@ export default (()=>{
         baseUrl,
         serverDomain,
         api,
+        noTokenList,
       }
     case modeMap.TEST:
       return {
@@ -25,6 +29,7 @@ export default (()=>{
         baseUrl,
         serverDomain,
         api,
+        noTokenList
       }
     case modeMap.ONLINE:
       return {
@@ -33,6 +38,7 @@ export default (()=>{
         baseUrl,
         serverDomain,
         api,
+        noTokenList
       }
     case modeMap.DEV:
     default:
@@ -42,6 +48,7 @@ export default (()=>{
         baseUrl,
         serverDomain,
         api,
+        noTokenList
       }
   }
 })()

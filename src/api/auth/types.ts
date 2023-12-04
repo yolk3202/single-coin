@@ -5,7 +5,11 @@ export interface LoginData {
   /**
    * 用户名
    */
-  username: string;
+  username?: string;
+  /**
+   * 手机号
+   */
+  phone_number: string;
   /**
    * 密码
    */

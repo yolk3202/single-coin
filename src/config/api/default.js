@@ -1,5 +1,11 @@
 const apiPre = '/api/'
 const api = {
+    // 登录接口
+    LOGIN: `${apiPre}user/login`,
+    // 注册接口 
+    REGISTER: `${apiPre}user/register`,
+    // 获取当前用户信息接口
+    GET_CURRENT_USER: `${apiPre}user/me`,
     // 获取交易货币对
     GET_EXCHANGE_INFO:`${apiPre}get_exchange_info`, 
     // 获取数据库中的折线图和K线图

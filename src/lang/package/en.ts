@@ -7,9 +7,18 @@ export default {
   // 登录页面国际化
   login: {
     username: "Username",
+    phone_number:"Phone Number",
     password: "Password",
     login: "Login",
     verifyCode: "Verify Code",
+    register: "Register",
+  },
+  register:{
+    phone_number:"Phone Number",
+    email:"Email",
+    nick_name:"Nick Name",
+    password: "Password",
+    submit_btn: "Register",
   },
   // 导航栏国际化
   navbar: {
