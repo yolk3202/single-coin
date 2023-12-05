@@ -18,47 +18,6 @@ export const useUserStore = defineStore("user", () => {
   const userInfo: Object = {}
   const token = useStorage("accessToken", "");
 
-  /**
-   * 登录
-   *
-   * @param {LoginData}
-   * @returns
-   */
-  function login(loginData: LoginData) {
-    return new Promise<void>((resolve, reject) => {
-      loginApi(loginData)
-        .then((response) => {
-          const { tokenType, accessToken } = response.data;
-          token.value = tokenType + " " + accessToken; // Bearer eyJhbGciOiJIUzI1NiJ9.xxx.xxx
-          resolve();
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  }
-
-  // 获取信息(用户昵称、头像、角色集合、权限集合)
-  function getInfo() {
-    return new Promise<UserInfo>((resolve, reject) => {
-      getUserInfo()
-        .then(({ data }) => {
-          if (!data) {
-            reject("Verification failed, please Login again.");
-            return;
-          }
-          if (!data.roles || data.roles.length <= 0) {
-            reject("getUserInfo: roles must be a non-null array!");
-            return;
-          }
-          Object.assign(user, { ...data });
-          resolve(data);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  }
 
   // 注销
   function logout() {
@@ -102,8 +61,10 @@ export const useUserStore = defineStore("user", () => {
     return new Promise<any>((resolve, reject) => {
       loginWithAccountApi(options)
         .then((res)=>{
-          const { code, data } = res.data;
+          console.log('res===>', res)
+          const { code, data } = res;
           if (code === 200) {
+            localStorage.setItem('token', data.token);
             token.value = data.token;
             Object.assign(userInfo, { ...data.user });
             resolve(res);
@@ -118,8 +79,6 @@ export const useUserStore = defineStore("user", () => {
   return {
     token,
     user,
-    login,
-    getInfo,
     logout,
     resetStore,
     getUserInfo,

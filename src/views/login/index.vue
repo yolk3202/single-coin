@@ -257,26 +257,22 @@ function getCaptcha() {
       loading.value = true;
       userStore
         .loginWithCount(loginData.value)
-        .then(() => {
-          const query: LocationQuery = route.query;
-
-          const redirect = (query.redirect as LocationQueryValue) ?? "/";
-
-          const otherQueryParams = Object.keys(query).reduce(
-            (acc: any, cur: string) => {
-              if (cur !== "redirect") {
-                acc[cur] = query[cur];
-              }
-              return acc;
-            },
-            {}
-          );
-
-          router.push({ path: redirect, query: otherQueryParams });
+        .then((res) => {
+          const {code, data} = res
+          if (code === 200) {
+            // 登录成功
+            ElMessage({
+              message: "登录成功～",
+              type: "success",
+            });
+            gotoRoute()
+          }
         })
         .catch(() => {
-          // 验证失败，重新生成验证码
-          getCaptcha();
+          ElMessage({
+              message: "登录异常～",
+              type: "success",
+            });
         })
         .finally(() => {
           loading.value = false;
@@ -284,7 +280,23 @@ function getCaptcha() {
     }
   });
 }
+function gotoRoute() {
+  const query: LocationQuery = route.query;
 
+  const redirect = (query.redirect as LocationQueryValue) ?? "/";
+
+  const otherQueryParams = Object.keys(query).reduce(
+    (acc: any, cur: string) => {
+      if (cur !== "redirect") {
+        acc[cur] = query[cur];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  router.push({ path: redirect, query: otherQueryParams });
+}
 function handleRegister() {
   router.push({ path: "/register" });
 }

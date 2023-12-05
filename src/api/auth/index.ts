@@ -54,7 +54,7 @@ export function loginWithAccountApi(options: any): AxiosPromise {
     url: config.api.LOGIN,
     method: "post",
     data: options,
-  } as AxiosRequestConfig<any>);
+  } as AxiosRequestConfig);
 }
 // 注册账号
 export function registerAccountApi(options: any): AxiosPromise {
