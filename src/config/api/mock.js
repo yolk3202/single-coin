@@ -23,6 +23,11 @@ const api = {
     ROBOT_ADMIN_GET_CONFIG: `${apiPre}bot`,
     // 机器人管理-机器人控制
     ROBOT_ADMIN_SWITCH: `${apiPre}bot/control`,
+
+    // 获取操作日志列表
+    GET_LOG_LIST: `${apiPre}oper_log/list`,
+    // 获取操作日志详情
+    GET_LOG_DETAIL: `${apiPre}oper_log/detail`,
 }
 
 export default api

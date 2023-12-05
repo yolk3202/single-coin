@@ -55,6 +55,29 @@ export const asyncRoutes = [
       },
       
     ],
+  },
+  {
+    path: "/log",
+    component: Layout,
+    redirect: "/log/manager",
+    meta: {
+      hidden: false,
+      icon: "system",
+      title: "操作日志管理",
+    },
+    children: [
+      {
+        path: "manager",
+        name: "manager",
+        component: () => import("@/views/log/manager/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "操作日志",
+        },
+      },
+      
+    ],
   }
 ];
 
