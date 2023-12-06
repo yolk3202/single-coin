@@ -57,6 +57,59 @@ export const asyncRoutes = [
     ],
   },
   {
+    path: "/robot_config",
+    component: Layout,
+    redirect: "/robot_config/robot_control",
+    meta: {
+      hidden: false,
+      icon: "system",
+      title: "机器人配置",
+    },
+    children: [
+      {
+        path: "far_plate",
+        name: "farPlate",
+        component: () => import("@/views/robotConfig/farPlate/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "远盘机器人",
+        },
+      },
+      {
+        path: "big_order",
+        name: "bigOrder",
+        component: () => import("@/views/robotConfig/bigOrder/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "大单机器人",
+        },
+      },
+      {
+        path: "draw_line",
+        name: "drawLine",
+        component: () => import("@/views/robotConfig/drawLine/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "对敲机器人",
+        },
+      },
+      {
+        path: "near_plate",
+        name: "nearPlate",
+        component: () => import("@/views/robotConfig/nearPlate/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "近盘机器人",
+        },
+      },
+      
+    ],
+  },
+  {
     path: "/log",
     component: Layout,
     redirect: "/log/manager",
