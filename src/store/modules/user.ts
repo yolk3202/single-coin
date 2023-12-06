@@ -61,7 +61,6 @@ export const useUserStore = defineStore("user", () => {
     return new Promise<any>((resolve, reject) => {
       loginWithAccountApi(options)
         .then((res)=>{
-          console.log('res===>', res)
           const { code, data } = res;
           if (code === 200) {
             localStorage.setItem('token', data.token);

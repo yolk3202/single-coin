@@ -23,7 +23,6 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    
     console.log("all response ==>", response);
     const { code, message } = response.data;
     if (code === 200) {
@@ -32,6 +31,17 @@ service.interceptors.response.use(
     }
     if (code === 404) {
       console.log("404 response ==>", response);
+      return response.data;
+    }
+    if(code === 401){
+      console.log("401 response ==>", response);
+      ElMessageBox.confirm("当前页面已失效，请重新登录", "提示", {
+        confirmButtonText: "确定",
+        type: "warning",
+      }).then(() => {
+        localStorage.clear();
+        window.location.href = "/";
+      });
       return response.data;
     }
     // 响应数据为二进制流处理(Excel导出)
@@ -43,10 +53,22 @@ service.interceptors.response.use(
     return Promise.reject(new Error(message || "Error"));
   },
   (error: any) => {
+    const {message, response} = error;
+    const {status, config:{url}} = response;
+    if(status >= 500){
+      ElMessage.error(`服务器错误，请联系开发人员! message: ${message}`)
+      return Promise.reject(error.message);
+    }
+    if(status >= 400){
+      ElMessage.error(`接口不存在，请联系开发人员! 接口: ${url}`)
+      return Promise.reject(error.message);
+    }
+    // 超时
     if (error.code === 'ECONNABORTED') {
       // 如果错误是由于超时引起的，显示一个提示
       ElMessage.error('接口超时，请刷新页面或者重新请求')
     }
+    // 内部约定
     if (error.response.data) {
       const { code, message } = error.response.data;
       // token 过期,重新登录
