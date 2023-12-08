@@ -24,9 +24,9 @@ const api = {
     ROBOT_ADMIN_SWITCH: `${apiPre}bot/control`,
 
     // 获取操作日志列表
-    GET_LOG_LIST: `${apiPre}oper_log/list`,
+    GET_LOG_LIST: `${apiPre}audit_log/query`,
     // 获取操作日志详情
-    GET_LOG_DETAIL: `${apiPre}oper_log/detail`,
+    GET_LOG_DETAIL: `${apiPre}audit_log/detail`,
 }
 
 export default api

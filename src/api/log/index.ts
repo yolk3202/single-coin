@@ -22,11 +22,11 @@ export const getLogList = (params: any): AxiosPromise => {
 };
 
 // 获取日志详情
-export const getLogDetail = (id: string): AxiosPromise => {
+export const getLogDetail = (params: any): AxiosPromise => {
   return requestApi({
     url: config.api.GET_LOG_DETAIL,
     method: "get",
-    params: { id },
+    params,
   }as AxiosRequestConfig<any>);
 };
 
