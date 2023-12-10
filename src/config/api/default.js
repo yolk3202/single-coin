@@ -30,6 +30,9 @@ const api = {
 
     // 新增机器人配置
     ADD_ROBOT_CONFIG: `${apiPre}bot/createOrUpdate`,
+
+    // 获取当前币机器人列表
+    GET_CURRENT_BOT_LIST: `${apiPre}bot/list`,
 }
 
 export default api

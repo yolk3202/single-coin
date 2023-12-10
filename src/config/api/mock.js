@@ -28,6 +28,12 @@ const api = {
     GET_LOG_LIST: `${apiPre}audit_log/query`,
     // 获取操作日志详情
     GET_LOG_DETAIL: `${apiPre}audit_log/detail`,
+
+    // 新增机器人配置
+    ADD_ROBOT_CONFIG: `${apiPre}bot/createOrUpdate`,
+
+    // 获取当前币机器人列表
+    GET_CURRENT_BOT_LIST: `${apiPre}bot/list`,
 }
 
 export default api

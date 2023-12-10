@@ -3,15 +3,6 @@ import { AxiosPromise } from "axios";
 import config from "@/config";
 import { AxiosRequestConfig } from "axios";
 
-export function getCurRobotConfig(options: any): AxiosPromise{
-  return requestApi({
-    url: config.api.ROBOT_ADMIN_GET_CONFIG,
-    method: "get",
-    params: options,
-  } as AxiosRequestConfig<any>);
-  
-}
-
 // 获取日志列表
 export const getLogList = (params: any): AxiosPromise => {
   return requestApi({

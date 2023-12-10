@@ -72,7 +72,6 @@ function getRobotConfig () {
 
 function changeStatus(){
   const ro = robotObj
-  console.log('出发了改变', ro)
   robotSystemApi.updateCurRobotStatus({
     symbol: queryParams.symbol,
     bot_type: ro.value,
