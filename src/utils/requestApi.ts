@@ -35,13 +35,14 @@ service.interceptors.response.use(
     }
     if(code === 401){
       console.log("401 response ==>", response);
-      ElMessageBox.confirm("当前页面已失效，请重新登录", "提示", {
-        confirmButtonText: "确定",
-        type: "warning",
-      }).then(() => {
-        localStorage.clear();
-        window.location.href = "/";
-      });
+      // 关注其他api接口 是否要做token校验
+      // ElMessageBox.confirm("当前页面已失效，请重新登录", "提示", {
+      //   confirmButtonText: "确定",
+      //   type: "warning",
+      // }).then(() => {
+      //   localStorage.clear();
+      //   window.location.href = "/";
+      // });
       return response.data;
     }
     // 响应数据为二进制流处理(Excel导出)
