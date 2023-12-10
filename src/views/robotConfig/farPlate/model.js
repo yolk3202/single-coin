@@ -18,6 +18,3 @@ export const defaultConfig = {
     minimum_volume:0,
     update_frequency_ms:0,
 }
-export const robotConfig = {
-    
-}

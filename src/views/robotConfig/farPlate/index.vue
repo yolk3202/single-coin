@@ -21,6 +21,7 @@ let robotObj = reactive({
 let robotConfig = reactive({
   ...defaultConfig
 })
+
 const configRules = reactive({
   layer_count: [{ required: true, message: '远盘层数不能为空', trigger: 'blur' }],
   maximum_price_deviation_ratio: [{ required: true, message: '价格最大偏离比例不能为空', trigger: 'blur' }],
@@ -28,8 +29,8 @@ const configRules = reactive({
   maximum_volume: [{ required: true, message: '最大量不能为空', trigger: 'blur' }],
   maximum_cancellation_price_ratio: [{ required: true, message: '最大撤单价格比例不能为空', trigger: 'blur' }],
   update_frequency_ms: [{ required: true, message: '远盘更新频率不能为空', trigger: 'blur' }],
-
 });
+
 // 币种
 function getCoinList() {
   robotSystemApi.getCoinTypeList().then((res) => {
@@ -151,8 +152,6 @@ onMounted(()=>{
               inactive-text="关闭状态"
               @change="changeStatus"
             />
-            <!--
-                -->
           </div>
         </div>
       </template>
@@ -190,9 +189,11 @@ onMounted(()=>{
         </el-form>
         <el-card shadow="never">
           <template #header>
-            <span>{{robotObj.name}}配置</span>
+            <div class="robot-header">
+              <div class="robot-title">{{robotObj.name}}配置</div>
+            </div>
           </template>
-          <div>
+          <div class="robot-config-form">
             <el-form
               ref="configFormRef"
               :model="robotConfig"
