@@ -102,7 +102,7 @@ onMounted(()=>{
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="最小点差（画线条件）">
-                  <el-input v-model="robotConfig.val"></el-input>
+                  <el-input-number v-model="robotConfig.val" :precision="2" :step="0.1" :max="10" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">

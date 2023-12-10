@@ -1,78 +1,163 @@
 <script setup>
-import {robotInfo} from './model'
+import { cloneDeep } from "lodash-es";
+import {robotInfo, defaultConfig} from './model'
 import robotSystemApi from '@/api/robotSystem';
 
+const inactiveValue = 0;
+const activeValue = 1;
+let loading = ref(false);
 let coinList = ref([]); // 币种列表
+let accountList = ref([]);
 let queryParams = reactive({
   symbol: "",
+  // 账户
+  account: "BTK01",
 });
+let pageType = ref('add'); // add, edit
+let robotObj = reactive({
+  ...robotInfo,
+});
+
 let robotConfig = reactive({
-  val:0,
+  ...defaultConfig
 })
+const configRules = reactive({
+  layer_count: [{ required: true, message: '远盘层数不能为空', trigger: 'blur' }],
+  maximum_price_deviation_ratio: [{ required: true, message: '价格最大偏离比例不能为空', trigger: 'blur' }],
+  minimum_volume: [{ required: true, message: '最小量不能为空', trigger: 'blur' }],
+  maximum_volume: [{ required: true, message: '最大量不能为空', trigger: 'blur' }],
+  maximum_cancellation_price_ratio: [{ required: true, message: '最大撤单价格比例不能为空', trigger: 'blur' }],
+  update_frequency_ms: [{ required: true, message: '远盘更新频率不能为空', trigger: 'blur' }],
+
+});
 // 币种
 function getCoinList() {
   robotSystemApi.getCoinTypeList().then((res) => {
     const { code, data, message } = res;
     coinList.value = data || [];
     data.includes("BTKUSDT") ? queryParams.symbol = "BTKUSDT" : queryParams.symbol = data[0];
+    getRobotConfig()
   });
 }
 
+function getRobotConfig () {
+  loading = true;
+  robotSystemApi.getCurRobotConfig({
+    symbol: queryParams.symbol,
+    bot_type: robotObj.value,
+  }).then(res => {
+    console.log('机器人配置', res, robotInfo)
+    const {code, data, message} = res;
+    if(code === 200){
+      if(data.id){
+        robotObj = Object.assign(robotObj, data);
+        robotConfig = Object.assign(robotConfig, data.config);
+        pageType.value = 'edit';
+      }else{
+        robotObj = Object.assign(robotObj, cloneDeep(robotInfo));
+        robotConfig = Object.assign(robotConfig, cloneDeep(defaultConfig));
+        pageType.value = 'add';
+      }
+    }else{
+      ElMessage.error({
+        message: message || '获取机器人配置失败'
+      })
+    }
+  }).finally(()=>{
+    loading = false;
+  })
+}
 
-function changeStatus(ro){
-  // console.log( ro)
-  ro.loading = true;
+
+function changeStatus(){
+  const ro = robotObj
+  console.log('出发了改变', ro)
   robotSystemApi.updateCurRobotStatus({
     symbol: queryParams.symbol,
     bot_type: ro.value,
-    status: ro.status?1:0,
+    status: ro.status,
   }).then(res => {
     console.log('切换后de状态', res)
     if(res.code !== 200) {
       ElMessage.error({
         message: `${ro.name}, ${res.message || '切换失败'}`
       })
-      ro.status = !ro.status 
       return;
     }
     ElMessage.success({
       message: `${ro.name}, ${ro.status?'开启成功':'关闭成功'}`
     })
   }).catch(err=>{
-    ro.status = !ro.status 
-  }).finally(() => {
-    ro.loading = false;
+    ElMessage.error({
+      message: `${ro.name}, ${err.message || '切换失败'}`
+    })
   })
 }
-function cancelConfig(){
-  console.log('取消')
+
+function changeSymbol(){
+  getRobotConfig()
 }
+
+function cancelConfig(){
+  getRobotConfig()
+}
+
 function submitConfig(){
-  console.log('保存')
+  submit()
+}
+
+function addConfig(){
+  submit()
+}
+
+function submit(){
+  robotSystemApi.addRobotConfig({
+    symbol: queryParams.symbol,
+    bot_type: robotObj.value,
+    config: robotConfig
+  }).then(res => {
+    console.log('保存机器人配置', res)
+    const {code, data, message} = res;
+    if(code === 200){
+      ElMessage.success({
+        message: '保存成功'
+      })
+    }else{
+      ElMessage.error({
+        message: message || '保存失败'
+      })
+    }
+  })
 }
 
 onMounted(()=>{
   getCoinList()
 })
+
 </script>
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="loading">
     <el-card shadow="never">
       <template #header>
-        <div class="card-header">
-          <span>{{robotInfo.name}}</span>
-          <el-switch
-            v-model="robotInfo.status"
-            size="large"
-            active-text="开启状态"
-            inactive-text="关闭状态"
-            :loading="robotInfo.loading"
-            @change="changeStatus(robotInfo)"
-          />
+        <div class="robot-header">
+          <div class="robot-title">{{robotObj.name}}</div>
+          <div class="robot-switch">
+            <el-switch
+              v-model="robotObj.status"
+              size="large"
+              :active-value=activeValue
+              :inactive-value=inactiveValue
+              active-text="开启状态"
+              inactive-text="关闭状态"
+              @change="changeStatus"
+            />
+            <!--
+                -->
+          </div>
         </div>
       </template>
       <div>
-        <el-form ref="queryFormRef"  :inline="true" :model="form">
+        <el-form ref="queryFormRef" :inline="true" :model="form">
           <el-form-item label="应用币种" prop="status">
             <el-select
               v-model="queryParams.symbol"
@@ -89,12 +174,13 @@ onMounted(()=>{
           </el-form-item>
           <el-form-item label="使用账户" prop="status">
             <el-select
-              v-model="queryParams.symbol"
+              v-model="queryParams.account"
               placeholder="选择账户"
               @change="changeSymbol"
+              disabled
             >
               <el-option
-                v-for="item in coinList"
+                v-for="item in accountList"
                 :key="item"
                 :value="item"
                 :label="item"
@@ -104,46 +190,47 @@ onMounted(()=>{
         </el-form>
         <el-card shadow="never">
           <template #header>
-            <span>{{robotInfo.name}}配置</span>
+            <span>{{robotObj.name}}配置</span>
           </template>
           <div>
             <el-form
               ref="configFormRef"
               :model="robotConfig"
+              :rules="configRules"
               label-width="auto"
               label-position="top"
             >
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-form-item label="远盘层数">
-                  <el-input v-model="robotConfig.val"></el-input>
+                <el-form-item label="远盘层数" prop="layer_count" >
+                  <el-input-number v-model="robotConfig.layer_count"  min="0" :max="999999999" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="价格最大偏离比例">
-                  <el-input v-model="robotConfig.val"></el-input>
+                <el-form-item label="价格最大偏离比例" prop="maximum_price_deviation_ratio">
+                  <el-input-number v-model="robotConfig.maximum_price_deviation_ratio" :precision="2" :step="0.01" min="0" :max="1" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="最小量">
-                  <el-input v-model="robotConfig.val"></el-input>
+                <el-form-item label="最小量" prop="minimum_volume" >
+                  <el-input-number v-model="robotConfig.minimum_volume" min="0" :max="999999999" />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-form-item label="最大量">
-                  <el-input v-model="robotConfig.val"></el-input>
+                <el-form-item label="最大量" prop="maximum_volume">
+                  <el-input-number v-model="robotConfig.maximum_volume"  min="0" :max="999999999" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="最大撤单价格比例">
-                  <el-input v-model="robotConfig.val"></el-input>
+                <el-form-item label="最大撤单价格比例" prop="maximum_cancellation_price_ratio">
+                  <el-input-number v-model="robotConfig.maximum_cancellation_price_ratio" :precision="2" :step="0.01" min="0" :max="999999999" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="远盘更新频率(ms)">
-                  <el-input v-model="robotConfig.val"></el-input>
+                <el-form-item label="远盘更新频率(ms)" prop="update_frequency_ms">
+                  <el-input-number v-model="robotConfig.update_frequency_ms" :step="1" min="0" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -151,7 +238,8 @@ onMounted(()=>{
           </div>
           <div>
             <el-button  @click="cancelConfig">取消</el-button>
-            <el-button type="primary" @click="submitConfig">保存</el-button>
+            <el-button type="primary" v-if="pageType==='edit'" @click="submitConfig">修改机器人配置{{pageType}}</el-button>
+            <el-button type="primary" v-if="pageType==='add'" @click="addConfig">新增机器人{{pageType}}</el-button>
           </div>
         </el-card>
       </div>

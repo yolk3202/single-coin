@@ -23,8 +23,18 @@ export function updateCurRobotStatus(options: any): AxiosPromise{
   } as AxiosRequestConfig<any>);
 }
 
+// 新增机器人配置
+export function addRobotConfig(options: any): AxiosPromise{
+  return requestApi({
+    url: config.api.ADD_ROBOT_CONFIG,
+    method: "post",
+    data: options,
+  } as AxiosRequestConfig<any>);
+}
+
 export default {
   getCoinTypeList,
   getCurRobotConfig,
-  updateCurRobotStatus
+  updateCurRobotStatus,
+  addRobotConfig
 }
