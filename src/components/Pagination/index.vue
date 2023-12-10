@@ -1,12 +1,23 @@
 <template>
   <div :class="{ hidden: hidden }" class="pagination">
     <el-pagination
+      v-if='total > 0'
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
       :background="background"
       :layout="layout"
       :page-sizes="pageSizes"
       :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+    <el-pagination
+      v-if='pageCount > 0'
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :background="background"
+      :layout="layout"
+      :page-sizes="pageSizes"
       :page-count="pageCount"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
