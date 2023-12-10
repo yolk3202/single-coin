@@ -154,10 +154,9 @@ onMounted(()=>{
               :inactive-value=inactiveValue
               active-text="开启状态"
               inactive-text="关闭状态"
+              :disabled="pageType==='add'"
               @change="changeStatus"
             />
-            <!--
-                -->
           </div>
         </div>
       </template>
@@ -197,7 +196,7 @@ onMounted(()=>{
           <template #header>
             <span>{{robotObj.name}}配置</span>
           </template>
-          <div>
+          <div class="robot-config-form">
             <el-form
               ref="configFormRef"
               :model="robotConfig"
