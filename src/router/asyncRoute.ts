@@ -67,6 +67,16 @@ export const asyncRoutes = [
     },
     children: [
       {
+        path: "near_plate",
+        name: "nearPlate",
+        component: () => import("@/views/robotConfig/nearPlate/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "近盘机器人",
+        },
+      },
+      {
         path: "far_plate",
         name: "farPlate",
         component: () => import("@/views/robotConfig/farPlate/index.vue"),
@@ -74,16 +84,6 @@ export const asyncRoutes = [
           icon: "system",
           hidden: false,
           title: "远盘机器人",
-        },
-      },
-      {
-        path: "big_order",
-        name: "bigOrder",
-        component: () => import("@/views/robotConfig/bigOrder/index.vue"),
-        meta: {
-          icon: "system",
-          hidden: false,
-          title: "大单机器人",
         },
       },
       {
@@ -97,16 +97,15 @@ export const asyncRoutes = [
         },
       },
       {
-        path: "near_plate",
-        name: "nearPlate",
-        component: () => import("@/views/robotConfig/nearPlate/index.vue"),
+        path: "big_order",
+        name: "bigOrder",
+        component: () => import("@/views/robotConfig/bigOrder/index.vue"),
         meta: {
           icon: "system",
           hidden: false,
-          title: "近盘机器人",
+          title: "大单机器人",
         },
-      },
-      
+      }, 
     ],
   },
   {
