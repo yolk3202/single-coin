@@ -267,8 +267,8 @@ onMounted(()=>{
           </div>
           <div>
             <el-button  @click="cancelConfig">取消</el-button>
-            <el-button type="primary" v-if="pageType==='edit'" @click="submitConfig">修改机器人配置{{pageType}}</el-button>
-            <el-button type="primary" v-if="pageType==='add'" @click="addConfig">新增机器人{{pageType}}</el-button>
+            <el-button type="primary" v-if="pageType==='edit'" @click="submitConfig">修改机器人配置</el-button>
+            <el-button type="primary" v-if="pageType==='add'" @click="addConfig">新增机器人</el-button>
           </div>
         </el-card>
       </div>
