@@ -29,16 +29,16 @@
         :rules="loginRules"
         class="login-form"
       >
-        <el-form-item prop="username">
+        <el-form-item prop="phone_number">
           <div class="p-2">
             <svg-icon icon-class="user" />
           </div>
           <el-input
             ref="username"
-            v-model="loginData.username"
+            v-model="loginData.phone_number"
             class="flex-1"
             size="large"
-            :placeholder="$t('login.username')"
+            :placeholder="$t('login.phone_number')"
             name="username"
           />
         </el-form-item>
@@ -108,19 +108,28 @@
           >{{ $t("login.login") }}
         </el-button>
 
+        <div class="register-line">
+          <el-button
+          type="primary"
+          class="register-btn"
+          @click.prevent="handleRegister"
+          >{{ $t("login.register") }}
+        </el-button>
+        </div>
+
         <!-- 账号密码提示 -->
-        <div class="mt-10 text-sm">
+        <!-- <div class="mt-10 text-sm">
           <span>{{ $t("login.username") }}: admin</span>
           <span class="ml-4"> {{ $t("login.password") }}: 123456</span>
-        </div>
+        </div> -->
       </el-form>
     </el-card>
 
     <!-- ICP备案 -->
-    <div class="absolute bottom-1 text-[10px] text-center">
+    <!-- <div class="absolute bottom-1 text-[10px] text-center">
       <p>Copyright © 2023 xinrui All Rights Reserved. 新锐科技 版权所有</p>
       <p>ICP备案号:xxx</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -182,8 +191,8 @@ const captchaBase64 = ref();
 const loginFormRef = ref(ElForm);
 
 const loginData = ref<LoginData>({
-  username: "admin",
-  password: "123456",
+  phone_number: "",
+  password: "",
 });
 
 const { t } = useI18n();
@@ -191,11 +200,11 @@ const { t } = useI18n();
 const loginRules = computed(() => {
   const prefix = appStore.language === "en" ? "Please enter " : "请输入";
   return {
-    username: [
+    phone_number: [
       {
         required: true,
         trigger: "blur",
-        message: `${prefix}${t("login.username")}`,
+        message: `${prefix}${t("login.phone_number")}`,
       },
     ],
     password: [
@@ -204,13 +213,6 @@ const loginRules = computed(() => {
         trigger: "blur",
         validator: passwordValidator,
         message: `${prefix}${t("login.password")}`,
-      },
-    ],
-    verifyCode: [
-      {
-        required: true,
-        trigger: "blur",
-        message: `${prefix}${t("login.verifyCode")}`,
       },
     ],
   };
@@ -249,32 +251,28 @@ function getCaptcha() {
 /**
  * 登录
  */
-function handleLogin() {
+ function handleLogin() {
   loginFormRef.value.validate((valid: boolean) => {
     if (valid) {
       loading.value = true;
       userStore
-        .login(loginData.value)
-        .then(() => {
-          const query: LocationQuery = route.query;
-
-          const redirect = (query.redirect as LocationQueryValue) ?? "/";
-
-          const otherQueryParams = Object.keys(query).reduce(
-            (acc: any, cur: string) => {
-              if (cur !== "redirect") {
-                acc[cur] = query[cur];
-              }
-              return acc;
-            },
-            {}
-          );
-
-          router.push({ path: redirect, query: otherQueryParams });
+        .loginWithCount(loginData.value)
+        .then((res) => {
+          const {code, data} = res
+          if (code === 200) {
+            // 登录成功
+            ElMessage({
+              message: "登录成功～",
+              type: "success",
+            });
+            gotoRoute()
+          }
         })
         .catch(() => {
-          // 验证失败，重新生成验证码
-          getCaptcha();
+          ElMessage({
+              message: "登录异常～",
+              type: "success",
+            });
         })
         .finally(() => {
           loading.value = false;
@@ -282,10 +280,28 @@ function handleLogin() {
     }
   });
 }
+function gotoRoute() {
+  const query: LocationQuery = route.query;
+
+  const redirect = (query.redirect as LocationQueryValue) ?? "/";
+
+  const otherQueryParams = Object.keys(query).reduce(
+    (acc: any, cur: string) => {
+      if (cur !== "redirect") {
+        acc[cur] = query[cur];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  router.push({ path: redirect, query: otherQueryParams });
+}
+function handleRegister() {
+  router.push({ path: "/register" });
+}
 
 onMounted(() => {
-  getCaptcha();
-
   // 主题初始化
   const theme = useSettingsStore().theme;
   useSettingsStore().changeSetting({ key: "theme", value: theme });
@@ -355,5 +371,11 @@ onMounted(() => {
       transition: background-color 5000s ease-in-out 0s; /* 通过延时渲染背景色变相去除背景颜色 */
     }
   }
+}
+.register-line{
+  margin-top:18px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 </style>

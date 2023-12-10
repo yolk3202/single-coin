@@ -1,0 +1,18 @@
+.robot-header{
+  display: flex;
+  align-items: center;
+  &>div{
+    line-height: 80rpx;
+  }
+  .robot-title{
+    width: 150px;
+  }
+  .robot-switch{
+    width: 240px;
+  }
+}
+.robot-config-form{
+  .el-input-number{
+    width:100%;
+  }
+}

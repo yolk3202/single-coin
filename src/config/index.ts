@@ -7,6 +7,7 @@ let configObj: ConfigType = {
   env: '',
   api: {},
   baseUrl: '',
+  noTokenList: []
 };
 
 const config: ConfigType = (() => {

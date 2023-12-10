@@ -1,3 +1,9 @@
+export const awaitWrap = (promise) => {
+  return promise
+    .then(data => [null, data])
+    .catch(err => [err, null])
+}
+
 export const formatDateToYMD = (date) => {
   // 获取年、月、日
   const year = date.getFullYear();
@@ -8,3 +14,4 @@ export const formatDateToYMD = (date) => {
   const dateString = `${year}-${month}-${day}`;
   return dateString;
 };
+
