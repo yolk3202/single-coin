@@ -23,10 +23,40 @@ let robotConfig = reactive({
 })
 
 const configRules = reactive({
-  minimum_point_spread: [{ required: true, message: '最小点差不能为空', trigger: 'blur' }],
+  minimum_point_spread: [{ required: true, message: '最小点差不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('最小点差要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('最小点差最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
   transaction_interval_ms: [{ required: true, message: '成交间隔不能为空', trigger: 'blur' }],
-  minimum_volume: [{ required: true, message: '最小交易量不能为空', trigger: 'blur' }],
-  maximum_volume: [{ required: true, message: '最大交易量不能为空', trigger: 'blur' }],
+  minimum_volume: [{ required: true, message: '最小交易量不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('最小交易量要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('最小交易量最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  maximum_volume: [{ required: true, message: '最大交易量不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('最大交易量要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('最大交易量最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
   large_probability: [{ required: true, message: '大额概率不能为空', trigger: 'blur' }],
   large_multiplier: [{ required: true, message: '大额乘数不能为空', trigger: 'blur' }],
 });
@@ -105,17 +135,6 @@ function cancelConfig(){
 }
 
 function submitConfig(){
-  configFormRef.value.validate((valid) => {
-    if (valid) {
-      submit()
-    } else {
-      console.log("error submit!!");
-      return false;
-    }
-  });
-}
-
-function addConfig(){
   configFormRef.value.validate((valid) => {
     if (valid) {
       submit()
@@ -220,34 +239,34 @@ onMounted(()=>{
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="最小点差（画线条件）" prop="minimum_point_spread">
-                  <el-input-number v-model="robotConfig.minimum_point_spread" :precision="8"   :step="0.00000001" min="0"  />
+                  <el-input v-model="robotConfig.minimum_point_spread" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="成交间隔（ms）" prop="transaction_interval_ms">
-                  <el-input-number v-model="robotConfig.transaction_interval_ms" :step="1" min="0" />
+                  <el-input-number v-model="robotConfig.transaction_interval_ms" :step="1" min="0" :max="999999999" controls-position="right" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="最小交易量"  prop="minimum_volume">
-                  <el-input-number v-model="robotConfig.minimum_volume" :precision="8" :step="0.00000001" min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.minimum_volume" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="最大交易量" prop="maximum_volume">
-                  <el-input-number v-model="robotConfig.maximum_volume" :precision="8" :step="0.00000001"  min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.maximum_volume" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="大额概率%" prop="large_probability">
-                  <el-input-number v-model="robotConfig.large_probability"  min="0" :max="100" />
+                  <el-input-number v-model="robotConfig.large_probability"  min="0" :max="100" controls-position="right"/>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="大额乘数" prop="large_multiplier">
-                  <el-input-number v-model="robotConfig.large_multiplier"  min="0" />
+                  <el-input-number v-model="robotConfig.large_multiplier"  min="0" :max="999999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -255,8 +274,7 @@ onMounted(()=>{
           </div>
           <div>
             <el-button  @click="cancelConfig">取消</el-button>
-            <el-button type="primary" v-if="pageType==='edit'" @click="submitConfig">修改机器人配置</el-button>
-            <el-button type="primary" v-if="pageType==='add'" @click="addConfig">新增机器人</el-button>
+            <el-button type="primary" @click="submitConfig">{{pageType==='edit'?"修改机器人配置":"新增机器人"}}</el-button>
           </div>
         </el-card>
       </div>

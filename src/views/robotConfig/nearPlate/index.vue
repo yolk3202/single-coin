@@ -23,13 +23,83 @@ let robotConfig = reactive({
 })
 const configRules = reactive({
   layer_count: [{ required: true, message: '近盘层数不能为空', trigger: 'blur' }],
-  sell_order_price_spread: [{ required: true, message: '卖盘盘口价差', trigger: 'blur' }],
-  buy_order_price_spread: [{ required: true, message: '买盘盘口价差', trigger: 'blur' }],
-  sell_order_step_length: [{ required: true, message: '卖盘步长', trigger: 'blur' }],
-  buy_order_step_length: [{ required: true, message: '买盘步长', trigger: 'blur' }],
-  minimum_point_spread: [{ required: true, message: '最小点差', trigger: 'blur' }],
-  minimum_volume: [{ required: true, message: '最小量', trigger: 'blur' }],
-  maximum_volume: [{ required: true, message: '最大量', trigger: 'blur' }],
+  sell_order_price_spread: [{ required: true, message: '卖盘盘口价差', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('卖盘盘口价差要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('卖盘盘口价差最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  buy_order_price_spread: [{ required: true, message: '买盘盘口价差', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('买盘盘口价差要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('买盘盘口价差最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  sell_order_step_length: [{ required: true, message: '卖盘步长', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('卖盘步长要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('卖盘步长最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  buy_order_step_length: [{ required: true, message: '买盘步长', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('买盘步长要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('买盘步长最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  minimum_point_spread: [{ required: true, message: '最小点差', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('最小点差要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('最小点差最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  minimum_volume: [{ required: true, message: '最小量', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('最小量要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('最小量最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  maximum_volume: [{ required: true, message: '最大量', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('最大量要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('最大量最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
   update_frequency_ms: [{ required: true, message: '更新频率', trigger: 'blur' }],
   quote_expiration_time_ms: [{ required: true, message: '报价过期时间', trigger: 'blur' }],
 });
@@ -109,17 +179,6 @@ function cancelConfig(){
 }
 
 function submitConfig(){
-  configFormRef.value.validate((valid) => {
-    if (valid) {
-      submit()
-    } else {
-      console.log("error submit!!");
-      return false;
-    }
-  });
-}
-
-function addConfig(){
   configFormRef.value.validate((valid) => {
     if (valid) {
       submit()
@@ -222,58 +281,58 @@ onMounted(()=>{
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="近盘层数" prop="layer_count" >
-                  <el-input-number v-model="robotConfig.layer_count"  min="0" :max="999999999" />
+                  <el-input-number v-model="robotConfig.layer_count" :step="1" min="0" :max="999999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="卖盘盘口价差" prop="sell_order_price_spread" >
-                  <el-input-number v-model="robotConfig.sell_order_price_spread" :step="0.00000001" min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.sell_order_price_spread" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="买盘盘口价差" prop="buy_order_price_spread" >
-                  <el-input-number v-model="robotConfig.buy_order_price_spread" :precision="4" :step="0.0001" min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.buy_order_price_spread" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="卖盘步长" prop="sell_order_step_length">
-                  <el-input-number v-model="robotConfig.sell_order_step_length" :precision="5" :step="0.00001" min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.sell_order_step_length" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="买盘步长" prop="buy_order_step_length">
-                  <el-input-number v-model="robotConfig.buy_order_step_length" :precision="5" :step="0.00001" min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.buy_order_step_length" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="最小点差" prop="minimum_point_spread">
-                  <el-input-number v-model="robotConfig.minimum_point_spread"  min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.minimum_point_spread" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="最小量" prop="minimum_volume" >
-                  <el-input-number v-model="robotConfig.minimum_volume"  min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.minimum_volume" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="最大量" prop="maximum_volume" >
-                  <el-input-number v-model="robotConfig.maximum_volume"  min="0" :max="999999999" />
+                <el-form-item label="最大量" prop="maximum_volume">
+                  <el-input v-model="robotConfig.maximum_volume" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="更新频率 (ms)" prop="update_frequency_ms" >
-                  <el-input-number v-model="robotConfig.update_frequency_ms" min="100" :max="99999999" />
+                  <el-input-number v-model="robotConfig.update_frequency_ms" :step="20" min="100" :max="99999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="报价过期时间 (ms)" prop="quote_expiration_time_ms" >
-                  <el-input-number v-model="robotConfig.quote_expiration_time_ms"  min="100" :max="99999999" />
+                  <el-input-number v-model="robotConfig.quote_expiration_time_ms" :step="20" min="100" :max="99999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
             </el-row>            
@@ -281,8 +340,7 @@ onMounted(()=>{
           </div>
           <div>
             <el-button  @click="cancelConfig">取消</el-button>
-            <el-button type="primary" v-if="pageType==='edit'" @click="submitConfig">修改机器人配置</el-button>
-            <el-button type="primary" v-if="pageType==='add'" @click="addConfig">新增机器人</el-button>
+            <el-button type="primary" @click="submitConfig">{{pageType==='edit'?"修改机器人配置":"新增机器人"}}</el-button>
           </div>
         </el-card>
       </div>
