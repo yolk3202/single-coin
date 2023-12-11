@@ -22,7 +22,17 @@ let robotConfig = reactive({
   ...defaultConfig
 })
 const configRules = reactive({
-  layer_count: [{ required: true, message: '近盘层数不能为空', trigger: 'blur' }],
+  layer_count: [{ required: true, message: '近盘层数不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('近盘层数要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('近盘层数最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
   sell_order_price_spread: [{ required: true, message: '卖盘盘口价差', trigger: 'blur' },
     { validator: (rule, value, callback) => {
       if(value <= 0){
