@@ -251,14 +251,14 @@ onMounted(()=>{
               </el-col>
               <el-col :span="8">
                 <el-form-item label="更新频率 (ms)" prop="update_frequency_ms" >
-                  <el-input-number v-model="robotConfig.update_frequency_ms" min="0" :max="10099999999" />
+                  <el-input-number v-model="robotConfig.update_frequency_ms" min="100" :max="99999999" />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="报价过期时间 (ms)" prop="quote_expiration_time_ms" >
-                  <el-input-number v-model="robotConfig.quote_expiration_time_ms"  min="0" :max="10099999999" />
+                  <el-input-number v-model="robotConfig.quote_expiration_time_ms"  min="100" :max="99999999" />
                 </el-form-item>
               </el-col>
             </el-row>            

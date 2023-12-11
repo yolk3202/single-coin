@@ -20,6 +20,6 @@ export const defaultConfig = {
     minimum_point_spread: 0, // 最小点差
     minimum_volume: 0, // 最小量
     maximum_volume: 0, //最大量
-    update_frequency_ms: 0, // 更新频率
-    quote_expiration_time_ms: 0, // 报价过期时间
+    update_frequency_ms: 100, // 更新频率
+    quote_expiration_time_ms: 100, // 报价过期时间
 }
