@@ -30,6 +30,8 @@ const configRules = reactive({
   large_probability: [{ required: true, message: '大额概率不能为空', trigger: 'blur' }],
   large_multiplier: [{ required: true, message: '大额乘数不能为空', trigger: 'blur' }],
 });
+const queryFormRef = ref(ElForm); // 搜索表单
+const configFormRef = ref(ElForm); // 配置表单
 
 // 币种
 function getCoinList() {
@@ -103,11 +105,25 @@ function cancelConfig(){
 }
 
 function submitConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function addConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function submit(){

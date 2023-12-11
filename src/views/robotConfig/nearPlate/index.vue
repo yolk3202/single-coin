@@ -22,7 +22,6 @@ let robotConfig = reactive({
   ...defaultConfig
 })
 const configRules = reactive({
-
   layer_count: [{ required: true, message: '近盘层数不能为空', trigger: 'blur' }],
   sell_order_price_spread: [{ required: true, message: '卖盘盘口价差', trigger: 'blur' }],
   buy_order_price_spread: [{ required: true, message: '买盘盘口价差', trigger: 'blur' }],
@@ -34,6 +33,8 @@ const configRules = reactive({
   update_frequency_ms: [{ required: true, message: '更新频率', trigger: 'blur' }],
   quote_expiration_time_ms: [{ required: true, message: '报价过期时间', trigger: 'blur' }],
 });
+const queryFormRef = ref(ElForm); // 搜索表单
+const configFormRef = ref(ElForm); // 配置表单
 
 // 币种
 function getCoinList() {
@@ -108,11 +109,25 @@ function cancelConfig(){
 }
 
 function submitConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function addConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function submit(){
@@ -212,7 +227,7 @@ onMounted(()=>{
               </el-col>
               <el-col :span="8">
                 <el-form-item label="卖盘盘口价差" prop="sell_order_price_spread" >
-                  <el-input-number v-model="robotConfig.sell_order_price_spread" :precision="4" :step="0.0001" min="0" :max="999999999" />
+                  <el-input-number v-model="robotConfig.sell_order_price_spread" :step="0.00000001" min="0" :max="999999999" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">

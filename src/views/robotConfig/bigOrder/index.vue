@@ -25,6 +25,8 @@ const configRules = reactive({
   minimum_order_interval: [{ required: true, message: '挂单时间间隔最低值 (min)', trigger: 'blur' }],
   maximum_order_interval: [{ required: true, message: '挂单时间间隔最高值 (min)', trigger: 'blur' }],
 });
+const queryFormRef = ref(ElForm); // 搜索表单
+const configFormRef = ref(ElForm); // 配置表单
 
 // 币种
 function getCoinList() {
@@ -99,11 +101,25 @@ function cancelConfig(){
 }
 
 function submitConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function addConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function submit(){

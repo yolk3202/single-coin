@@ -30,6 +30,8 @@ const configRules = reactive({
   maximum_cancellation_price_ratio: [{ required: true, message: '最大撤单价格比例不能为空', trigger: 'blur' }],
   update_frequency_ms: [{ required: true, message: '远盘更新频率不能为空', trigger: 'blur' }],
 });
+const queryFormRef = ref(ElForm); // 搜索表单
+const configFormRef = ref(ElForm); // 配置表单
 
 // 币种
 function getCoinList() {
@@ -103,11 +105,25 @@ function cancelConfig(){
 }
 
 function submitConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function addConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function submit(){
