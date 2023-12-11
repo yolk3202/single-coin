@@ -14,7 +14,7 @@
   <!-- 用户头像 -->
   <el-dropdown trigger="click">
     <div class="avatar-container">
-      <img :src="userStore.user.avatar + '?imageView2/1/w/80/h/80'" />
+      <img :src="logo" />
       <i-ep-caret-bottom class="w-3 h-3" />
     </div>
     <template #dropdown>
@@ -22,18 +22,6 @@
         <router-link to="/">
           <el-dropdown-item>{{ $t("navbar.dashboard") }}</el-dropdown-item>
         </router-link>
-        <a
-          target="_blank"
-          href="https://github.com/youlaitech/vue3-element-admin"
-        >
-          <el-dropdown-item>Github</el-dropdown-item>
-        </a>
-        <a target="_blank" href="https://gitee.com/haoxr">
-          <el-dropdown-item>{{ $t("navbar.gitee") }}</el-dropdown-item>
-        </a>
-        <a target="_blank" href="https://juejin.cn/post/7228990409909108793">
-          <el-dropdown-item>{{ $t("navbar.document") }}</el-dropdown-item>
-        </a>
         <el-dropdown-item divided @click="logout">
           {{ $t("navbar.logout") }}
         </el-dropdown-item>
@@ -47,6 +35,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAppStore } from "@/store/modules/app";
 import { useTagsViewStore } from "@/store/modules/tagsView";
 import { useUserStore } from "@/store/modules/user";
+const logo = ref(new URL(`../../../assets/logo.png`, import.meta.url).href);
 
 const appStore = useAppStore();
 const tagsViewStore = useTagsViewStore();
@@ -66,7 +55,7 @@ const { isFullscreen, toggle } = useFullscreen();
  * 注销
  */
 function logout() {
-  ElMessageBox.confirm("确定注销并退出系统吗？", "提示", {
+  ElMessageBox.confirm("确定退出系统吗？", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
