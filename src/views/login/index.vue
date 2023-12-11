@@ -269,10 +269,6 @@ function getCaptcha() {
           }
         })
         .catch(() => {
-          ElMessage({
-              message: "登录异常～",
-              type: "success",
-            });
         })
         .finally(() => {
           loading.value = false;
