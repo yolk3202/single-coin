@@ -83,6 +83,7 @@ onMounted(()=>{
             <el-select
               v-model="queryParams.symbol"
               placeholder="选择币种"
+              filterable
               @change="changeSymbol"
             >
               <el-option

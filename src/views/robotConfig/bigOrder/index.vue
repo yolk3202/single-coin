@@ -5,7 +5,7 @@ import robotSystemApi from '@/api/robotSystem';
 
 const inactiveValue = 0;
 const activeValue = 1;
-let loading = ref(false);
+let loading = ref(true);
 let coinList = ref([]); // 币种列表
 let accountList = ref([]);
 let queryParams = reactive({
@@ -39,12 +39,13 @@ function getCoinList() {
 }
 
 function getRobotConfig () {
-  loading = true;
+  loading.value = true;
   robotSystemApi.getCurRobotConfig({
     symbol: queryParams.symbol,
     bot_type: robotObj.value,
   }).then(res => {
     console.log('机器人配置', res, robotInfo)
+    configFormRef.value.resetFields();
     const {code, data, message} = res;
     if(code === 200){
       if(data.id){
@@ -62,7 +63,7 @@ function getRobotConfig () {
       })
     }
   }).finally(()=>{
-    loading = false;
+    loading.value = false;
   })
 }
 
@@ -153,8 +154,6 @@ onMounted(()=>{
               :disabled="pageType==='add'"
               @change="changeStatus"
             />
-            <!--
-                -->
           </div>
         </div>
       </template>
@@ -164,6 +163,7 @@ onMounted(()=>{
             <el-select
               v-model="queryParams.symbol"
               placeholder="选择币种"
+              filterable
               @change="changeSymbol"
             >
               <el-option
