@@ -61,7 +61,17 @@ const configRules = reactive({
       // }
     }, trigger: 'blur' }],
   maximum_cancellation_price_ratio: [{ required: true, message: '最大撤单价格比例不能为空', trigger: 'blur' }],
-  update_frequency_ms: [{ required: true, message: '远盘更新频率不能为空', trigger: 'blur' }],
+  update_frequency_ms: [{ required: true, message: '远盘更新频率不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('远盘更新频率要大于0ms'));
+      }
+      if(value > 99999999) {
+        callback(new Error('远盘更新频率最大为99999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
 });
 const queryFormRef = ref(ElForm); // 搜索表单
 const configFormRef = ref(ElForm); // 配置表单
@@ -272,7 +282,7 @@ onMounted(()=>{
               </el-col>
               <el-col :span="8">
                 <el-form-item label="远盘更新频率(ms)" prop="update_frequency_ms">
-                  <el-input-number v-model="robotConfig.update_frequency_ms" :step="1" min="0" controls-position="right"/>
+                  <el-input-number v-model="robotConfig.update_frequency_ms" :step="20" min="0" :max="99999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
             </el-row>

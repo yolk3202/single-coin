@@ -110,8 +110,28 @@ const configRules = reactive({
         callback();
       }
     }, trigger: 'blur' }],
-  update_frequency_ms: [{ required: true, message: '更新频率', trigger: 'blur' }],
-  quote_expiration_time_ms: [{ required: true, message: '报价过期时间', trigger: 'blur' }],
+  update_frequency_ms: [{ required: true, message: '更新频率', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value < 100){
+        callback(new Error('更新频率不能小于100ms'));
+      }
+      if(value > 999999999) {
+        callback(new Error('更新频率最大为999999999ms'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  quote_expiration_time_ms: [{ required: true, message: '报价过期时间', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value < 100){
+        callback(new Error('报价过期时间不能小于100ms'));
+      }
+      if(value > 999999999) {
+        callback(new Error('报价过期时间最大为999999999ms'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
 });
 const queryFormRef = ref(ElForm); // 搜索表单
 const configFormRef = ref(ElForm); // 配置表单
@@ -338,14 +358,14 @@ onMounted(()=>{
               </el-col>
               <el-col :span="8">
                 <el-form-item label="更新频率 (ms)" prop="update_frequency_ms" >
-                  <el-input-number v-model="robotConfig.update_frequency_ms" :step="20" min="100" :max="99999999" controls-position="right"/>
+                  <el-input-number v-model="robotConfig.update_frequency_ms" :step="20" min="0" :max="99999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="报价过期时间 (ms)" prop="quote_expiration_time_ms" >
-                  <el-input-number v-model="robotConfig.quote_expiration_time_ms" :step="20" min="100" :max="99999999" controls-position="right"/>
+                  <el-input-number v-model="robotConfig.quote_expiration_time_ms" :step="20" min="0" :max="99999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
             </el-row>            

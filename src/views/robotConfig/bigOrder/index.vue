@@ -22,8 +22,28 @@ let robotConfig = reactive({
   ...defaultConfig
 })
 const configRules = reactive({
-  minimum_order_interval: [{ required: true, message: '请输入挂单时间间隔最低值 (min)', trigger: 'blur' }],
-  maximum_order_interval: [{ required: true, message: '请输入挂单时间间隔最高值 (max)', trigger: 'blur' }],
+  minimum_order_interval: [{ required: true, message: '请输入挂单时间间隔最低值 (min)', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('挂单时间间隔最低值要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('挂单时间间隔最低值最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  maximum_order_interval: [{ required: true, message: '请输入挂单时间间隔最高值 (max)', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('挂单时间间隔最高值要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('挂单时间间隔最高值最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
 });
 const queryFormRef = ref(ElForm); // 搜索表单
 const configFormRef = ref(ElForm); // 配置表单
@@ -205,7 +225,7 @@ onMounted(()=>{
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="挂单时间间隔最低值 (min)" prop="minimum_order_interval" >
-                  <el-input-number v-model="robotConfig.minimum_order_interval"  min="0" :max="999999999" controls-position="right" />
+                  <el-input-number v-model="robotConfig.minimum_order_interval" min="0" :max="999999999" controls-position="right" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">
