@@ -108,20 +108,17 @@
           >{{ $t("login.login") }}
         </el-button>
 
-        <div class="register-line">
+        <!--
+          <div class="register-line">
           <el-button
-          type="primary"
-          class="register-btn"
-          @click.prevent="handleRegister"
-          >{{ $t("login.register") }}
-        </el-button>
+            type="primary"
+            class="register-btn"
+            @click.prevent="handleRegister"
+            >{{ $t("login.register") }}
+          </el-button>
         </div>
-
-        <!-- 账号密码提示 -->
-        <!-- <div class="mt-10 text-sm">
-          <span>{{ $t("login.username") }}: admin</span>
-          <span class="ml-4"> {{ $t("login.password") }}: 123456</span>
-        </div> -->
+        -->
+        
       </el-form>
     </el-card>
 
@@ -269,10 +266,6 @@ function getCaptcha() {
           }
         })
         .catch(() => {
-          ElMessage({
-              message: "登录异常～",
-              type: "success",
-            });
         })
         .finally(() => {
           loading.value = false;

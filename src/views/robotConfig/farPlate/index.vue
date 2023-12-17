@@ -5,7 +5,7 @@ import robotSystemApi from '@/api/robotSystem';
 
 const inactiveValue = 0;
 const activeValue = 1;
-let loading = ref(false);
+let loading = ref(true);
 let coinList = ref([]); // 币种列表
 let accountList = ref([]);
 let queryParams = reactive({
@@ -23,13 +23,58 @@ let robotConfig = reactive({
 })
 
 const configRules = reactive({
-  layer_count: [{ required: true, message: '远盘层数不能为空', trigger: 'blur' }],
+  layer_count: [{ required: true, message: '远盘层数不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('远盘层数要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('远盘层数最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
   maximum_price_deviation_ratio: [{ required: true, message: '价格最大偏离比例不能为空', trigger: 'blur' }],
-  minimum_volume: [{ required: true, message: '最小量不能为空', trigger: 'blur' }],
-  maximum_volume: [{ required: true, message: '最大量不能为空', trigger: 'blur' }],
+  minimum_volume: [{ required: true, message: '最小量不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('最小量要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('最小量最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  maximum_volume: [{ required: true, message: '最大量不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('最大量要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('最大量最大为999999999'));
+      } else {
+        callback();
+      }
+      // else if (value < robotConfig.minimum_volume) {
+      //   callback(new Error('最大量必须大于最小量'));
+      // }
+    }, trigger: 'blur' }],
   maximum_cancellation_price_ratio: [{ required: true, message: '最大撤单价格比例不能为空', trigger: 'blur' }],
-  update_frequency_ms: [{ required: true, message: '远盘更新频率不能为空', trigger: 'blur' }],
+  update_frequency_ms: [{ required: true, message: '远盘更新频率不能为空', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('远盘更新频率要大于0ms'));
+      }
+      if(value > 99999999) {
+        callback(new Error('远盘更新频率最大为99999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
 });
+const queryFormRef = ref(ElForm); // 搜索表单
+const configFormRef = ref(ElForm); // 配置表单
 
 // 币种
 function getCoinList() {
@@ -42,12 +87,13 @@ function getCoinList() {
 }
 
 function getRobotConfig () {
-  loading = true;
+  loading.value = true;
   robotSystemApi.getCurRobotConfig({
     symbol: queryParams.symbol,
     bot_type: robotObj.value,
   }).then(res => {
     console.log('机器人配置', res, robotInfo)
+    configFormRef.value.resetFields();
     const {code, data, message} = res;
     if(code === 200){
       if(data.id){
@@ -65,7 +111,7 @@ function getRobotConfig () {
       })
     }
   }).finally(()=>{
-    loading = false;
+    loading.value = false;
   })
 }
 
@@ -103,12 +149,16 @@ function cancelConfig(){
 }
 
 function submitConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
-function addConfig(){
-  submit()
-}
 
 function submit(){
   robotSystemApi.addRobotConfig({
@@ -161,6 +211,7 @@ onMounted(()=>{
             <el-select
               v-model="queryParams.symbol"
               placeholder="选择币种"
+              filterable
               @change="changeSymbol"
             >
               <el-option
@@ -204,34 +255,34 @@ onMounted(()=>{
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="远盘层数" prop="layer_count" >
-                  <el-input-number v-model="robotConfig.layer_count"  min="0" :max="999999999" />
+                  <el-input-number v-model="robotConfig.layer_count"  min="0" :max="999999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="价格最大偏离比例" prop="maximum_price_deviation_ratio">
-                  <el-input-number v-model="robotConfig.maximum_price_deviation_ratio" :precision="2" :step="0.01" min="0" :max="1" />
+                  <el-input-number v-model="robotConfig.maximum_price_deviation_ratio" :precision="2" :step="0.01" min="0" :max="1" controls-position="right"/>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="最小量" prop="minimum_volume" >
-                  <el-input-number v-model="robotConfig.minimum_volume" min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.minimum_volume" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="最大量" prop="maximum_volume">
-                  <el-input-number v-model="robotConfig.maximum_volume"  min="0" :max="999999999" />
+                  <el-input v-model="robotConfig.maximum_volume" type="number" step="0.01" min="0" max="999999999"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="最大撤单价格比例" prop="maximum_cancellation_price_ratio">
-                  <el-input-number v-model="robotConfig.maximum_cancellation_price_ratio" :precision="2" :step="0.01" min="0" :max="999999999" />
+                  <el-input-number v-model="robotConfig.maximum_cancellation_price_ratio" :precision="2" :step="0.01" min="0" :max="999999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="远盘更新频率(ms)" prop="update_frequency_ms">
-                  <el-input-number v-model="robotConfig.update_frequency_ms" :step="1" min="0" />
+                  <el-input-number v-model="robotConfig.update_frequency_ms" :step="20" min="0" :max="99999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -239,8 +290,7 @@ onMounted(()=>{
           </div>
           <div>
             <el-button  @click="cancelConfig">取消</el-button>
-            <el-button type="primary" v-if="pageType==='edit'" @click="submitConfig">修改机器人配置</el-button>
-            <el-button type="primary" v-if="pageType==='add'" @click="addConfig">新增机器人</el-button>
+            <el-button type="primary" @click="submitConfig">{{pageType==='edit'?"修改机器人配置":"新增机器人"}}</el-button>
           </div>
         </el-card>
       </div>

@@ -21,23 +21,18 @@ export const useUserStore = defineStore("user", () => {
 
   // 注销
   function logout() {
-    return new Promise<void>((resolve, reject) => {
-      logoutApi()
-        .then(() => {
-          resetStore();
-          location.reload(); // 清空路由
-          resolve();
-        })
-        .catch((error) => {
-          reject(error);
-        });
+    return new Promise<void>((resolve) => {
+      resetStore();
+      location.reload(); // 清空路由
+      resolve();
     });
   }
 
   /** 清空缓存 */
   function resetStore() {
-    resetRouter();
+    // resetRouter();
     token.value = "";
+    localStorage.removeItem("token");
     Object.assign(user, { roles: [], perms: [] });
   }
 
@@ -45,7 +40,7 @@ export const useUserStore = defineStore("user", () => {
     return new Promise<UserInfo>((resolve, reject) => {
       getUserInfoApi({})
       .then((response) => {
-        const { code, data } = response.data;
+        const { data:{code, data} } = response;
         if (code === 200) {
           Object.assign(user, { ...data });
           resolve(data);

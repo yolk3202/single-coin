@@ -97,7 +97,7 @@ onMounted(() => {
       </el-table>
       <pagination
         v-model:total="pageCount"
-        v-model:page="queryParams.page"
+        v-model:page="queryParams.page_no"
         v-model:limit="queryParams.page_size"
         @pagination="handleQuery"
       />

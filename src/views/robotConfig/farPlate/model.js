@@ -11,10 +11,10 @@ export const robotInfo = {
     config:null,
 }
 export const defaultConfig = {
-    layer_count:0,
-    maximum_cancellation_price_ratio:0,
-    maximum_price_deviation_ratio:0,
-    maximum_volume:0,
-    minimum_volume:0,
-    update_frequency_ms:0,
+    layer_count:undefined,
+    maximum_cancellation_price_ratio:undefined,
+    maximum_price_deviation_ratio:undefined,
+    maximum_volume:undefined,
+    minimum_volume:undefined,
+    update_frequency_ms:undefined,
 }

@@ -5,7 +5,7 @@ import robotSystemApi from '@/api/robotSystem';
 
 const inactiveValue = 0;
 const activeValue = 1;
-let loading = ref(false);
+let loading = ref(true);
 let coinList = ref([]); // 币种列表
 let accountList = ref([]);
 let queryParams = reactive({
@@ -22,9 +22,31 @@ let robotConfig = reactive({
   ...defaultConfig
 })
 const configRules = reactive({
-  minimum_order_interval: [{ required: true, message: '挂单时间间隔最低值 (min)', trigger: 'blur' }],
-  maximum_order_interval: [{ required: true, message: '挂单时间间隔最高值 (min)', trigger: 'blur' }],
+  minimum_order_interval: [{ required: true, message: '请输入挂单时间间隔最低值 (min)', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('挂单时间间隔最低值要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('挂单时间间隔最低值最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
+  maximum_order_interval: [{ required: true, message: '请输入挂单时间间隔最高值 (max)', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+      if(value <= 0){
+        callback(new Error('挂单时间间隔最高值要大于0'));
+      }
+      if(value > 999999999) {
+        callback(new Error('挂单时间间隔最高值最大为999999999'));
+      } else {
+        callback();
+      }
+    }, trigger: 'blur' }],
 });
+const queryFormRef = ref(ElForm); // 搜索表单
+const configFormRef = ref(ElForm); // 配置表单
 
 // 币种
 function getCoinList() {
@@ -37,12 +59,13 @@ function getCoinList() {
 }
 
 function getRobotConfig () {
-  loading = true;
+  loading.value = true;
   robotSystemApi.getCurRobotConfig({
     symbol: queryParams.symbol,
     bot_type: robotObj.value,
   }).then(res => {
     console.log('机器人配置', res, robotInfo)
+    configFormRef.value.resetFields();
     const {code, data, message} = res;
     if(code === 200){
       if(data.id){
@@ -60,7 +83,7 @@ function getRobotConfig () {
       })
     }
   }).finally(()=>{
-    loading = false;
+    loading.value = false;
   })
 }
 
@@ -99,11 +122,14 @@ function cancelConfig(){
 }
 
 function submitConfig(){
-  submit()
-}
-
-function addConfig(){
-  submit()
+  configFormRef.value.validate((valid) => {
+    if (valid) {
+      submit()
+    } else {
+      console.log("error submit!!");
+      return false;
+    }
+  });
 }
 
 function submit(){
@@ -148,8 +174,6 @@ onMounted(()=>{
               :disabled="pageType==='add'"
               @change="changeStatus"
             />
-            <!--
-                -->
           </div>
         </div>
       </template>
@@ -159,6 +183,7 @@ onMounted(()=>{
             <el-select
               v-model="queryParams.symbol"
               placeholder="选择币种"
+              filterable
               @change="changeSymbol"
             >
               <el-option
@@ -200,12 +225,12 @@ onMounted(()=>{
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="挂单时间间隔最低值 (min)" prop="minimum_order_interval" >
-                  <el-input-number v-model="robotConfig.minimum_order_interval"  min="0" :max="999999999" />
+                  <el-input-number v-model="robotConfig.minimum_order_interval" min="0" :max="999999999" controls-position="right" />
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="挂单时间间隔最高值 (min)" prop="maximum_order_interval" >
-                  <el-input-number v-model="robotConfig.maximum_order_interval" min="0" :max="999999999" />
+                <el-form-item label="挂单时间间隔最高值 (max)" prop="maximum_order_interval" >
+                  <el-input-number v-model="robotConfig.maximum_order_interval" min="0" :max="999999999" controls-position="right" />
                 </el-form-item>
               </el-col>
             </el-row>           
@@ -213,8 +238,7 @@ onMounted(()=>{
           </div>
           <div>
             <el-button  @click="cancelConfig">取消</el-button>
-            <el-button type="primary" v-if="pageType==='edit'" @click="submitConfig">修改机器人配置</el-button>
-            <el-button type="primary" v-if="pageType==='add'" @click="addConfig">新增机器人</el-button>
+            <el-button type="primary" @click="submitConfig">{{pageType==='edit'?"修改机器人配置":"新增机器人"}}</el-button>
           </div>
         </el-card>
       </div>

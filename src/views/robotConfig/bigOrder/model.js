@@ -12,6 +12,6 @@ export const robotInfo = {
 }
 
 export const defaultConfig = {
-    minimum_order_interval: 0,
-    maximum_order_interval: 0,
+    minimum_order_interval: undefined,
+    maximum_order_interval: undefined,
 }

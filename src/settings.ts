@@ -53,7 +53,7 @@ interface DefaultSettings {
 
 const defaultSettings: DefaultSettings = {
   title: "市值管理工具",
-  version: "v.2.6.5",
+  version: "v1.0.0",
   showSettings: true,
   tagsView: true,
   fixedHeader: false,
