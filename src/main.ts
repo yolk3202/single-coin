@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "@/router";
 import { setupStore } from "@/store";
 import { setupDirective } from "@/directive";
+import globalFilters from "./filters/index.js";
 
 import "@/permission";
 
@@ -22,5 +23,6 @@ const app = createApp(App);
 setupDirective(app);
 // 全局注册 状态管理(store)
 setupStore(app);
+app.config.globalProperties.$filters = globalFilters;
 
 app.use(router).use(i18n).mount("#app");

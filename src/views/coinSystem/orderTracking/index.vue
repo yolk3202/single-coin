@@ -1,5 +1,5 @@
 <script setup>
-import { cloneDeep } from "lodash-es";
+import moment from 'moment'
 import { initTableRow, statusList,sideList,orderTypeList} from "./model";
 import coinSystem from "@/api/coinSystem";
 
@@ -17,13 +17,7 @@ const loading = ref(false);
 let coinList = ref([]); // 币种列表
 
 const queryParams = reactive({
-  page: 1,
-  page_size: 20,
-  session_id: '-1',
   symbol:"",
-  side: "",
-  order_type:"",
-  status:"",
   start_time:"",
   end_time:"",
 });
@@ -38,12 +32,16 @@ function getCoinList() {
   coinSystem.getCoinTypeList().then((res) => {
     const { code, data, message } = res;
     coinList.value = data || [];
+    data.includes("BTKUSDT") ? queryParams.symbol = "BTKUSDT" : queryParams.symbol = data[0];
+    handleQuery();
   });
 }
 
 function setEndTimeDisabledDate(v){
-  return v.getTime() < new Date(queryParams.start_time).getTime()- 8.64e7
+  let zero_time = moment(queryParams.start_time, 'YYYY-MM-DD HH:mm:ss').startOf('day').valueOf();
+  return v.getTime() < zero_time
 }
+
 function setEndTimeDisabledHour(){
   const arrs = []
   const hour = new Date(queryParams.start_time).getHours()
@@ -53,6 +51,7 @@ function setEndTimeDisabledHour(){
   }
   return arrs;
 }
+
 function setEndTimeDisabledMinute(){
   const arrs = []
   const minute = new Date(queryParams.start_time).getMinutes()
@@ -62,6 +61,7 @@ function setEndTimeDisabledMinute(){
   }
   return arrs;
 }
+
 function setEndTimeDisabledSecond(){
   const arrs = []
 
@@ -72,21 +72,22 @@ function setEndTimeDisabledSecond(){
   }
   return arrs;
 }
+function startTimeChange(val){
+  // val 的0时区时间
+  const t = moment(val, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
+  const time = moment(val, 'YYYY-MM-DD HH:mm:ss')
+  const endTime = moment(queryParams.end_time, 'YYYY-MM-DD HH:mm:ss')
+  if(time.isAfter(endTime)){
+    queryParams.end_time = ''
+  }
+}
 
 function QueryInquire(){
-  queryParams.page = 1;
-  queryParams.session_id = '-1';
   handleQuery()
 }
 function resetQuery(){
   Object.assign(queryParams, {
-    page: 1,
-    page_size: 20,
-    session_id: '-1',
     symbol:"",
-    side: "",
-    order_type:"",
-    status:"",
     start_time:"",
     end_time:"",
   })
@@ -95,14 +96,13 @@ function resetQuery(){
 // 查询
 function handleQuery() {
   loading.value = true;
-  coinSystem.getOrderList(queryParams)
+  console.log('nihao====>queryParams',queryParams)
+  coinSystem.getHistoryOrderList(queryParams)
     .then((res) => {
       console.log('res===>res',res);
-      const {code, data:{data:list,page_count, session_id },message} = res
+      const {code, data, message} = res
       if(code === 200){
-        tableData.value = list;
-        pageCount.value = page_count;
-        queryParams.session_id = String(session_id);
+        tableData.value = data;
       }
     })
     .finally(() => {
@@ -112,8 +112,6 @@ function handleQuery() {
 onMounted(() => {
   // 获取币种接口
   getCoinList();
-  // 请求接口
-  handleQuery();
 });
 </script>
 
@@ -125,6 +123,7 @@ onMounted(() => {
           <el-select
             v-model="queryParams.symbol"
             placeholder="选择币种"
+            filterable
             clearable
           >
             <el-option
@@ -135,7 +134,7 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="买卖方向:">
+        <el-form-item label="买卖方向:" v-if="false">
           <el-select
             v-model="queryParams.side"
             placeholder="选择买卖方向"
@@ -149,10 +148,11 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="订单类型:">
+        <el-form-item label="订单类型:"  v-if="false">
           <el-select
             v-model="queryParams.order_type"
             placeholder="选择订单类型"
+            disabled
             clearable
           >
             <el-option
@@ -163,10 +163,11 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="订单状态:">
+        <el-form-item label="订单状态:"  v-if="false">
           <el-select
             v-model="queryParams.status"
             placeholder="选择订单状态"
+            disabled
             clearable
           >
             <el-option
@@ -177,16 +178,17 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="开始时间">
+        <el-form-item label="日期时间">
           <el-date-picker
             v-model="queryParams.start_time"
             type="datetime"
             placeholder="选择开始时间"
-            format="YYYY-MM-DD hh:mm:ss"
-            value-format="YYYY-MM-DD hh:mm:ss"
+            format="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            :clearable="false"
+            @change="startTimeChange"
           />
-        </el-form-item>
-        <el-form-item label="结束时间">
+          <span style="width:16px;text-align: center;"> - </span>
           <el-date-picker
             v-model="queryParams.end_time"
             type="datetime"
@@ -195,8 +197,9 @@ onMounted(() => {
             :disabled-hours="setEndTimeDisabledHour"
             :disabled-minutes="setEndTimeDisabledMinute" 
             :disabled-seconds="setEndTimeDisabledSecond"
-            format="YYYY-MM-DD hh:mm:ss"
-            value-format="YYYY-MM-DD hh:mm:ss"
+            format="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            :clearable="false"
           />
         </el-form-item>
         <el-form-item>
@@ -221,6 +224,9 @@ onMounted(() => {
           :min-width="item.minWidth"
         >
           <template #default="scope">
+            <template v-if="item.slot === 'timeStamp'">
+              <span>{{ $filters.timestampToTime(scope.row[item.prop]) }}</span>
+            </template>
             <template v-if="item.slot === 'status'">
               <status-item :status="scope.row[item.prop]" />
             </template>
@@ -230,13 +236,6 @@ onMounted(() => {
           </template>
         </el-table-column>
       </el-table>
-
-      <pagination
-        v-model:pageCount="pageCount"
-        v-model:page="queryParams.page"
-        v-model:limit="queryParams.page_size"
-        @pagination="handleQuery"
-      />
     </el-card>
   </div>
 </template>

@@ -1,38 +1,7 @@
 export const Layout = () => import("@/layout/index.vue");
 
 export const asyncRoutes = [
-  // {
-  //   path: "/coin_system",
-  //   component: Layout,
-  //   redirect: "/coin_system/order_tracking",
-  //   meta: {
-  //     hidden: false,
-  //     icon: "system",
-  //     title: "币币系统",
-  //   },
-  //   children: [
-  //     {
-  //       path: "order_tracking",
-  //       name: "orderTracking",
-  //       component: () => import("@/views/coinSystem/orderTracking/index.vue"),
-  //       meta: {
-  //         icon: "system",
-  //         hidden: false,
-  //         title: "订单查询",
-  //       },
-  //     },
-  //     {
-  //       path: "coin_pair_management",
-  //       name: "coinPairManagement",
-  //       component: () => import("@/views/coinSystem/coinPairManagement/index.vue"),
-  //       meta: {
-  //         icon: "system",
-  //         hidden: false,
-  //         title: "币对管理",
-  //       },
-  //     },
-  //   ],
-  // },
+  
   {
     path: "/robot_system",
     component: Layout,
@@ -108,6 +77,52 @@ export const asyncRoutes = [
       }, 
     ],
   },
+  {
+    path: "/coin_system",
+    component: Layout,
+    redirect: "/coin_system/order_tracking",
+    meta: {
+      icon: "system",
+      hidden: false,
+      title: "订单记录",
+    },
+    children: [
+      {
+        path: "order_tracking",
+        name: "orderTracking",
+        component: () => import("@/views/coinSystem/orderTracking/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "订单记录",
+        },
+      },
+    ],
+  },
+  {
+    path: "/coin_system",
+    component: Layout,
+    redirect: "/coin_system/assets_record",
+    meta: {
+      icon: "system",
+      hidden: false,
+      title: "资产记录",
+    },
+    children: [
+      //资产记录
+      {
+        path: "assets_record",
+        name: "/assets_record",
+        component: () => import("@/views/coinSystem/assetsRecord/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "资产记录",
+        },
+      },
+    ],
+  },
+  // 交易所跟单
   {
     path: "/log",
     component: Layout,

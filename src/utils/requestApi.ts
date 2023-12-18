@@ -106,7 +106,7 @@ function dealWidthParams(data: { [key: string]: any } | null | undefined) {
 // 导出 axios 实例
 export default function (reqConfig: AxiosRequestConfig<any>) {
   reqConfig.data =reqConfig.data && dealWidthParams(reqConfig.data);
-  reqConfig.params =reqConfig.params&& dealWidthParams(reqConfig.params);
+  // reqConfig.params =reqConfig.params&& dealWidthParams(reqConfig.params);
   const token = localStorage.getItem('token');
   // 判断当前接口是否需要 添加自定义头部
   if(!config.noTokenList.includes(reqConfig.url as string)){

@@ -41,10 +41,18 @@ export function getCurCoinPrice(options: CurCoinPriceType): AxiosPromise {
     params: options,
   } as AxiosRequestConfig<any>);
 }
+// 获取货币列表
+export function getCoinList(): AxiosPromise {
+  return requestApi({
+    url: config.api.GET_COIN_LIST,
+    method: "get",
+  } as AxiosRequestConfig<any>);
+}
 
 export default {
   getCoinDataApi,
   sendCoinDataApi,
   getCoinTypeList,
-  getCurCoinPrice
+  getCurCoinPrice,
+  getCoinList,
 }
