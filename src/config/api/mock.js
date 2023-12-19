@@ -40,9 +40,9 @@ const api = {
     GET_HISTORY_ORDER: `${apiPre}order/history_intrade`,
 
     // 获取账号资产实时数据
-    GET_ACCOUNT_ASSETS: `${apiPre}/account/info`,
+    GET_ACCOUNT_ASSETS: `${apiPre}account/assets_intrade`,
     // 获取账号资产历史记录
-    GET_ACCOUNT_ASSETS_HISTORY: `${apiPre}account/assets`,
+    GET_ACCOUNT_ASSETS_HISTORY: `${apiPre}account/assets/search`,
 }
 
 export default api
