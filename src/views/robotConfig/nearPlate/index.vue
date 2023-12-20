@@ -368,6 +368,16 @@ onMounted(()=>{
                   <el-input-number v-model="robotConfig.quote_expiration_time_ms" :step="20" min="0" :max="99999999" controls-position="right"/>
                 </el-form-item>
               </el-col>
+              <el-col :span="8">
+                <el-form-item label="买盘市价因子（%）">
+                  <el-input-number v-model="robotConfig.buyside_market_impact" :step="1" min="0" :max="100" controls-position="right"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="卖盘市价因子（%）">
+                  <el-input-number v-model="robotConfig.sellside_market_impact" :step="1" min="0" :max="100" controls-position="right"/>
+                </el-form-item>
+              </el-col>
             </el-row>            
             </el-form>
           </div>
