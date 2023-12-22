@@ -1,6 +1,6 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosRequestConfig } from "axios";
 import config from "@/config";
-console.log('...config', config)
+// console.log('...config', config)
 
 // 创建 axios 实例
 const service = axios.create({
@@ -12,7 +12,6 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    console.log("请求拦截器");
     return config;
   },
   (error: any) => {
@@ -23,10 +22,10 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log("all response ==>", response);
+    // console.log("all response ==>", response);
     const { code, message } = response.data;
     if (code === 200) {
-      console.log("200 response ==>", response);
+      // console.log("200 response ==>", response);
       return response.data;
     }
     if (code === 404) {
@@ -35,14 +34,17 @@ service.interceptors.response.use(
     }
     if(code === 401){
       console.log("401 response ==>", response);
-      // 关注其他api接口 是否要做token校验
-      // ElMessageBox.confirm("当前页面已失效，请重新登录", "提示", {
-      //   confirmButtonText: "确定",
-      //   type: "warning",
-      // }).then(() => {
-      //   localStorage.clear();
-      //   window.location.href = "/";
-      // });
+      if(message === 'Token is invalid'){
+        // 关注其他api接口 是否要做token校验
+        ElMessageBox.confirm("当前页面已失效，请重新登录", "提示", {
+          confirmButtonText: "确定",
+          type: "warning",
+        }).then(() => {
+          localStorage.clear();
+          window.location.href = "/";
+        });
+        return response.data;
+      }
       return response.data;
     }
     // 响应数据为二进制流处理(Excel导出)

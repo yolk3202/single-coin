@@ -12,7 +12,7 @@ let configObj: ConfigType = {
 
 const config: ConfigType = (() => {
   const env = process.env.NODE_ENV;
-  console.log('env=====>', env)
+  // console.log('env=====>', env)
   if (env === envMap.DEV) {
     configObj = { ...configObj, ...dev };
   }
