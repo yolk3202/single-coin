@@ -6,6 +6,7 @@ defineOptions({
 });
 import {initFlowTableRow, initRealTimeTableRow,hourList} from './model.js'
 import coinSystem from "@/api/coinSystem";
+import coinApi from '@/api/coin'
 
 const queryFormRef = ref(ElForm); // 查询表单
 
@@ -14,6 +15,7 @@ let coinList = ref([]); // 币种列表
 
 const queryParams = reactive({
   symbol:"",
+  // account_id:"",
   hour:24,
   start_time:"",
   end_time:"",
@@ -136,6 +138,15 @@ function getRealTimeData(){
     realTimeLoading.value= false
   })
 }
+// let accountList = ref([])
+// function getAccountList(){
+//   coinApi.getAccountList().then(res=>{
+//     const {code, data, message} = res
+//     if(code === 200){
+//       accountList.value = data || [];
+//     }
+//   })
+// }
 onMounted(() => {
   queryParams.start_time = moment().startOf('day').format('YYYY-MM-DD HH:mm:ss')
   queryParams.end_time = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -144,6 +155,7 @@ onMounted(() => {
   // 请求接口
   // 获取实时数据
   getRealTimeData();
+  // getAccountList()
 });
 </script>
 
@@ -169,6 +181,19 @@ onMounted(() => {
                   />
                 </el-select>
               </el-form-item>
+              <!-- <el-form-item label="账号搜索">
+                <el-select
+                  v-model="queryParams.account_id"
+                  placeholder="选择账号"
+                >
+                  <el-option
+                    v-for="item in accountList"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.uname"
+                  />
+                </el-select>
+              </el-form-item> -->
               <el-form-item label="查看方式" prop="status">
                 <el-select
                   v-model="queryParams.hour"
