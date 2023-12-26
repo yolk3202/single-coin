@@ -2,6 +2,7 @@
 import moment from 'moment'
 import { initTableRow, statusList,sideList,orderTypeList} from "./model";
 import coinSystem from "@/api/coinSystem";
+import { getCoinPairList } from "@/api/coin";
 
 import statusItem from './component/statusItem.vue'
 import sideItem from './component/sideItem.vue'
@@ -29,10 +30,19 @@ const tableData = ref([]);
 
 // 币种
 function getCoinList() {
-  coinSystem.getCoinTypeList().then((res) => {
+  getCoinPairList().then((res) => {
     const { code, data, message } = res;
-    coinList.value = data || [];
-    data.includes("BTKUSDT") ? queryParams.symbol = "BTKUSDT" : queryParams.symbol = data[0];
+    if(code === 200){
+      coinList.value = data || [];
+      const hasSymbol = data.some((item) => {
+        return item.symbol === "BTKUSDT";
+      });
+      if (hasSymbol) {
+        queryParams.symbol = "BTKUSDT";
+      } else {
+        queryParams.symbol = data[0].symbol;
+      }
+    }
     handleQuery();
   });
 }
@@ -128,9 +138,9 @@ onMounted(() => {
           >
             <el-option
               v-for="item in coinList"
-              :key="item"
-              :value="item"
-              :label="item"
+              :key="item.symbol"
+              :value="item.symbol"
+              :label="item.symbol"
             />
           </el-select>
         </el-form-item>

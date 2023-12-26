@@ -122,6 +122,29 @@ export const asyncRoutes = [
       },
     ],
   },
+  // 币对管理
+  {
+    path: "/coin",
+    component: Layout,
+    redirect: "/coin/manager",
+    meta: {
+      hidden: false,
+      icon: "system",
+      title: "币对管理",
+    },
+    children: [
+      {
+        path: "manager",
+        name: "/manager",
+        component: () => import("@/views/coin/manager/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "币对管理",
+        },
+      },
+    ],
+  },
   // 交易所跟单
   {
     path: "/log",

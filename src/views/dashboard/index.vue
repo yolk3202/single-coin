@@ -2,7 +2,7 @@
 import { useUserStore } from "@/store/modules/user";
 import { useTransition, TransitionPresets } from "@vueuse/core";
 import { formatDateToYMD } from "@/utils/utils";
-import { getCoinTypeList, getCurCoinPrice } from "@/api/coin";
+import { getCoinPairList } from "@/api/coin";
 
 import { useCoinStore } from "@/store/modules/coin";
 import {array} from "fast-glob/out/utils";
@@ -33,11 +33,19 @@ function selectCoinType() {
 }
 
 function getCoinList() {
-  getCoinTypeList().then((res) => {
-    console.log(res);
+  getCoinPairList().then((res) => {
     const { code, data, message } = res;
-    coinList.value = data || [];
-    data.includes("BTKUSDT") ? queryParams.symbol = "BTKUSDT" : queryParams.symbol = data[0];
+    if(code === 200){
+      coinList.value = data || [];
+      const hasSymbol = data.some((item: any) => {
+        return item.symbol === "BTKUSDT";
+      });
+      if (hasSymbol) {
+        queryParams.symbol = "BTKUSDT";
+      } else {
+        queryParams.symbol = data[0].symbol;
+      }
+    }
     getPrice();
   });
 }
@@ -129,9 +137,9 @@ onMounted(() => {
           >
             <el-option
               v-for="item in coinList"
-              :key="item"
-              :value="item"
-              :label="item"
+              :key="item.symbol"
+              :value="item.symbol"
+              :label="item.symbol"
             />
           </el-select>
         </el-form-item>

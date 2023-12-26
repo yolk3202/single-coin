@@ -2,7 +2,6 @@ import requestApi from "@/utils/requestApi";
 import { AxiosPromise } from "axios";
 import config from "@/config";
 import { AxiosRequestConfig } from "axios";
-import {getCoinTypeList} from '@/api/coin/index'
 
 // 获取当前币种的机器人列表
 export const getRobotList = (params: any): AxiosPromise => {
@@ -43,7 +42,6 @@ export function addRobotConfig(options: any): AxiosPromise{
 
 export default {
   getRobotList,
-  getCoinTypeList,
   getCurRobotConfig,
   updateCurRobotStatus,
   addRobotConfig

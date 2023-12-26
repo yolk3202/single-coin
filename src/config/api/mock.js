@@ -1,5 +1,4 @@
 const apiPre = '/m1/3538235-0-default/';
-
 const api = {
     // 登录接口
     LOGIN: `${apiPre}user/login`,
@@ -43,6 +42,12 @@ const api = {
     GET_ACCOUNT_ASSETS: `${apiPre}account/assets_intrade`,
     // 获取账号资产历史记录
     GET_ACCOUNT_ASSETS_HISTORY: `${apiPre}account/assets/search`,
+    // 账号列表
+    GET_ACCOUNT_LIST: `${apiPre}account/all`,
+    // 币对管理列表
+    GET_COIN_PAIR_LIST: `${apiPre}coin/all`,
+    // 新对&修改币对
+    ADD_COIN_PAIR: `${apiPre}coin`,
 }
 
 export default api

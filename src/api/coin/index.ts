@@ -49,10 +49,46 @@ export function getCoinList(): AxiosPromise {
   } as AxiosRequestConfig<any>);
 }
 
+// 获取币对列表
+export function getCoinPairList(): AxiosPromise {
+  return requestApi({
+    url: config.api.GET_COIN_PAIR_LIST,
+    method: "get",
+  } as AxiosRequestConfig<any>);
+}
+// 新增币对
+export function addCoinPair(options: any): AxiosPromise {
+  return requestApi({
+    url: config.api.ADD_COIN_PAIR,
+    method: "post",
+    data: options,
+  } as AxiosRequestConfig<any>);
+}
+
+// 修改币对
+export function updateCoinPair(options: any): AxiosPromise {
+  return requestApi({
+    url: config.api.ADD_COIN_PAIR,
+    method: "put",
+    data: options,
+  } as AxiosRequestConfig<any>);
+}
+
+// 获取账号列表
+export function getAccountList(): AxiosPromise {
+  return requestApi({
+    url: config.api.GET_ACCOUNT_LIST,
+    method: "get",
+  } as AxiosRequestConfig<any>);
+}
 export default {
   getCoinDataApi,
   sendCoinDataApi,
   getCoinTypeList,
   getCurCoinPrice,
   getCoinList,
+  getCoinPairList,
+  addCoinPair,
+  updateCoinPair,
+  getAccountList,
 }
