@@ -22,4 +22,7 @@ export const defaultConfig = {
     maximum_volume: undefined, //最大量
     update_frequency_ms: undefined, // 更新频率
     quote_expiration_time_ms: undefined, // 报价过期时间
+    buyside_market_impact: undefined, // 买盘市价因子
+    sellside_market_impact: undefined, // 卖盘市价因子
+
 }

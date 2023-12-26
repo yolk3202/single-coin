@@ -2,7 +2,7 @@
 import { cloneDeep } from "lodash-es";
 import {robotInfo, defaultConfig} from './model'
 import robotSystemApi from '@/api/robotSystem';
-
+import { getCoinPairList } from "@/api/coin";
 const inactiveValue = 0;
 const activeValue = 1;
 let loading = ref(true);
@@ -138,11 +138,20 @@ const configFormRef = ref(ElForm); // 配置表单
 
 // 币种
 function getCoinList() {
-  robotSystemApi.getCoinTypeList().then((res) => {
+  getCoinPairList().then((res) => {
     const { code, data, message } = res;
-    coinList.value = data || [];
-    data.includes("BTKUSDT") ? queryParams.symbol = "BTKUSDT" : queryParams.symbol = data[0];
-    getRobotConfig()
+    if(code === 200){
+      coinList.value = data || [];
+      const hasSymbol = data.some((item) => {
+        return item.symbol === "BTKUSDT";
+      });
+      if (hasSymbol) {
+        queryParams.symbol = "BTKUSDT";
+      } else {
+        queryParams.symbol = data[0].symbol;
+      }
+    }
+    getRobotConfig();
   });
 }
 
@@ -277,9 +286,9 @@ onMounted(()=>{
             >
               <el-option
                 v-for="item in coinList"
-                :key="item"
-                :value="item"
-                :label="item"
+                :key="item.symbol"
+                :value="item.symbol"
+                :label="item.symbol"
               />
             </el-select>
           </el-form-item>
@@ -366,6 +375,16 @@ onMounted(()=>{
               <el-col :span="8">
                 <el-form-item label="报价过期时间 (ms)" prop="quote_expiration_time_ms" >
                   <el-input-number v-model="robotConfig.quote_expiration_time_ms" :step="20" min="0" :max="99999999" controls-position="right"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="买盘市价因子（%）">
+                  <el-input-number v-model="robotConfig.buyside_market_impact" :step="1" min="0" :max="100" controls-position="right"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="卖盘市价因子（%）">
+                  <el-input-number v-model="robotConfig.sellside_market_impact" :step="1" min="0" :max="100" controls-position="right"/>
                 </el-form-item>
               </el-col>
             </el-row>            

@@ -19,9 +19,8 @@ router.beforeEach(async (to, from, next) => {
     next();
   } else{
     const userStore = useUserStoreHook();
-    if (userStore.token === "") {
+    if (userStore.token === "" || !userStore.hasLogin) {
       const [err, data] = await awaitWrap(userStore.getUserInfo());
-      console.log('nihao===res', err, data)
       if (err || data.code !== 200) {
         next(`/login?redirect=${to.path}`);
         NProgress.done();

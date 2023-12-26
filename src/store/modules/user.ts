@@ -17,7 +17,7 @@ export const useUserStore = defineStore("user", () => {
   };
   const userInfo: Object = {}
   const token = useStorage("accessToken", "");
-
+  let hasLogin = ref(false);
 
   // 注销
   function logout() {
@@ -37,13 +37,16 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function getUserInfo() {
-    return new Promise<UserInfo>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       getUserInfoApi({})
       .then((response) => {
-        const { data:{code, data} } = response;
+        const {code, data} = response;
         if (code === 200) {
           Object.assign(user, { ...data });
-          resolve(data);
+          hasLogin.value = true;
+          resolve(response);
+        }else{
+          reject(response)
         }
       })
       .catch((error) => {
@@ -61,6 +64,8 @@ export const useUserStore = defineStore("user", () => {
             localStorage.setItem('token', data.token);
             token.value = data.token;
             Object.assign(userInfo, { ...data.user });
+            hasLogin.value = true;
+            getUserInfo()
             resolve(res);
           }
         })
@@ -72,6 +77,7 @@ export const useUserStore = defineStore("user", () => {
 
   return {
     token,
+    hasLogin,
     user,
     logout,
     resetStore,
