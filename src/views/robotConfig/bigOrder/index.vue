@@ -204,7 +204,7 @@ onMounted(()=>{
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="使用账户" prop="status">
+          <el-form-item v-if="false" label="使用账户" prop="status">
             <el-select
               v-model="queryParams.account"
               placeholder="选择账户"

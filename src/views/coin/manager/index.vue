@@ -1,6 +1,6 @@
 <script setup>
 import coinApi from '@/api/coin'
-import {initTableRow, trackingStrategyList} from './model.js'
+import {initTableRow, trackingStrategyList, stateMap} from './model.js'
 const infoFormRef = ref(ElForm)
 const accountList = ref([])
 function getAccountList(){
@@ -28,27 +28,63 @@ function getCoinPairList(){
 const drawer = reactive({
   visible: false,
   title: '新增币对',
-  direction: 'rtl'
+  direction: 'rtl',
+  action: 'add',
 })
 let formValue = reactive({
   symbol: '',
   account_id: '',
   tracking_strategy: 'DRAW_LINE',
+  state: stateMap.STOPPED,
 })
 function addNew(){
   drawer.visible = true
   drawer.title = '新增币对'
+  drawer.action = 'add'
   formValue = reactive({
     symbol: '',
     account_id: '',
     tracking_strategy: 'DRAW_LINE',
+    state: stateMap.STOPPED,
   })
 }
 
 function editItem(row){
   drawer.visible = true
   drawer.title = '编辑币对'
+  drawer.action = 'edit'
   formValue = reactive({...row})
+}
+
+function deleteItem(row){
+  console.log('deleteItem', row)
+  ElMessageBox.confirm('此操作将永久删除该币对, 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    coinApi.deleteCoinPair({id:row.id}).then(res=>{
+      console.log(res)
+      const {code, data, message} = res
+      if(code === 200){
+        ElMessage({
+          message: "删除成功～",
+          type: "success",
+        });
+        getCoinPairList()
+      }else{
+        ElMessage({
+          message: `删除失败${message}`,
+          type: "error",
+        });
+      }
+    })
+  }).catch(() => {
+    ElMessage({
+      type: 'info',
+      message: '已取消删除'
+    });          
+  });
 }
 
 function handleConfirm(){
@@ -61,7 +97,7 @@ function handleConfirm(){
         let options = {
           id: formValue.id,
           tracking_strategy: formValue.tracking_strategy,
-          status: formValue.status
+          state: formValue.state
         }
         coinApi.updateCoinPair(options)
         .then(res=>{
@@ -114,9 +150,21 @@ function handleClose(){
   drawer.visible = false
 }
 
+let coinList = ref([])
+function getCoinTypeList(){
+  coinApi.getCoinTypeList().then(res=>{
+    console.log(res)
+    const {code, data, message} = res
+    if(code === 200){
+      coinList.value = data
+    }
+  })
+}
+
 onMounted(()=>{
   getAccountList()
   getCoinPairList()
+  getCoinTypeList()
 })
 </script>
 <template>
@@ -132,7 +180,7 @@ onMounted(()=>{
           :prop="item.prop" :width="item.width" :min-width="item.minWidth">
           <template #default="scope">
             <template v-if="item.slot === 'status'">
-              <span>{{scope.row.status=== 1?'正常': scope.row.status=== 0? '停用':'未知'}}</span>
+              <span>{{scope.row[item.prop]=== stateMap.RUNNING?'正常': scope.row[item.prop]=== stateMap.STOPPED? '停用':'未知'}}</span>
             </template>
             <template v-if="item.slot === 'strategy'">
               <span v-if="scope.row[item.prop]=== 'DRAW_LINE'">画线({{scope.row[item.prop]}})</span>
@@ -140,6 +188,9 @@ onMounted(()=>{
             <template v-if="item.slot === 'action'">
               <el-button type="text" size="mini" @click="editItem(scope.row)">
                 编辑
+              </el-button>
+              <el-button type="text" size="mini" @click="deleteItem(scope.row)">
+                删除
               </el-button>
             </template>
           </template>
@@ -153,15 +204,25 @@ onMounted(()=>{
       :before-close="handleClose">
       <el-form ref="infoFormRef" label-width="120px"  :model="formValue">
         <el-form-item label="币对">
-          <el-input
+          <el-select
             v-model="formValue.symbol"
             placeholder="填写币种"
-          />
+            filter
+            :disabled="drawer.action === 'edit'"
+          >
+            <el-option
+              v-for="item in coinList"
+              :key="item"
+              :value="item"
+              :label="item"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="账号ID">
           <el-select
             v-model="formValue.account_id"
             placeholder="选择账号"
+            :disabled="drawer.action === 'edit'"
           >
             <el-option
               v-for="item in accountList"
@@ -187,18 +248,16 @@ onMounted(()=>{
         </el-form-item>
         <el-form-item label="状态">
           <el-switch
-            v-model="formValue.status"
-            :active-value="1"
-            :inactive-value="0"
+            v-model="formValue.state"
+            :active-value="stateMap.RUNNING"
+            :inactive-value="stateMap.STOPPED"
           />
         </el-form-item>
-      </el-form>
-      <template #footer>
-        <div style="flex: auto">
+        <el-form-item>
           <el-button type="primary" @click="handleConfirm">确认</el-button>
           <el-button @click="handleClose">取消</el-button>
-        </div>
-      </template>
+        </el-form-item>
+      </el-form>
     </el-drawer>
   </div>
 </template>
