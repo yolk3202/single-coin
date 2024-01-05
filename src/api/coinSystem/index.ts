@@ -2,7 +2,7 @@ import requestApi from "@/utils/requestApi";
 import { AxiosPromise } from "axios";
 import config from "@/config";
 import { AxiosRequestConfig } from "axios";
-import {getCoinList} from '@/api/coin/index'
+import { getCoinList } from "@/api/coin/index";
 
 // 获取订单列表
 export function getOrderList(options: any): AxiosPromise {

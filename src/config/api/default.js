@@ -1,53 +1,58 @@
-const apiPre = '/api/'
+const apiPre = "/api/";
 const api = {
-    // 登录接口
-    LOGIN: `${apiPre}user/login`,
-    // 注册接口 
-    REGISTER: `${apiPre}user/register`,
-    // 获取当前用户信息接口
-    GET_CURRENT_USER: `${apiPre}user/me`,
-    // 获取交易货币对
-    GET_EXCHANGE_INFO:`${apiPre}get_exchange_info`,
-    // 获取货币列表
-    GET_COIN_LIST:`${apiPre}exchange/coins`,
-    // 获取数据库中的折线图和K线图
-    FETCH_OHLCV:`${apiPre}fetch_ohlcv`,
-    // 创建K 线
-    CREATE_OHLCV:`${apiPre}create_ohlcv`,
-    //获取最新价格
-    GET_NEW_PRICE:`${apiPre}get_last_price`,
-    
-    // 机器人管理-获取机器人配置
-    ROBOT_ADMIN_GET_CONFIG: `${apiPre}bot`,
-    // 机器人管理-机器人控制
-    ROBOT_ADMIN_SWITCH: `${apiPre}bot/control`,
+  // 登录接口
+  LOGIN: `${apiPre}user/login`,
+  // 注册接口
+  REGISTER: `${apiPre}user/register`,
+  // 获取当前用户信息接口
+  GET_CURRENT_USER: `${apiPre}user/me`,
+  // 获取交易货币对
+  GET_EXCHANGE_INFO: `${apiPre}get_exchange_info`,
+  // 获取货币列表
+  GET_COIN_LIST: `${apiPre}exchange/coins`,
+  // 获取数据库中的折线图和K线图
+  FETCH_OHLCV: `${apiPre}fetch_ohlcv`,
+  // 创建K 线
+  CREATE_OHLCV: `${apiPre}create_ohlcv`,
+  //获取最新价格
+  GET_NEW_PRICE: `${apiPre}get_last_price`,
 
-    // 获取操作日志列表
-    GET_LOG_LIST: `${apiPre}audit_log/query`,
-    // 获取操作日志详情
-    GET_LOG_DETAIL: `${apiPre}audit_log/detail`,
+  // 机器人管理-获取机器人配置
+  ROBOT_ADMIN_GET_CONFIG: `${apiPre}bot`,
+  // 机器人管理-机器人控制
+  ROBOT_ADMIN_SWITCH: `${apiPre}bot/control`,
 
-    // 新增机器人配置
-    ADD_ROBOT_CONFIG: `${apiPre}bot/createOrUpdate`,
+  // 获取操作日志列表
+  GET_LOG_LIST: `${apiPre}audit_log/query`,
+  // 获取操作日志详情
+  GET_LOG_DETAIL: `${apiPre}audit_log/detail`,
 
-    // 获取当前币机器人列表
-    GET_CURRENT_BOT_LIST: `${apiPre}bot/list`,
+  // 新增机器人配置
+  ADD_ROBOT_CONFIG: `${apiPre}bot/createOrUpdate`,
 
-    // 查询订单
-    BI_SYSTEM_GET_ORDER:`${apiPre}order`,
-    // 查询历史订单
-    GET_HISTORY_ORDER: `${apiPre}order/history_intrade`,
+  // 获取当前币机器人列表
+  GET_CURRENT_BOT_LIST: `${apiPre}bot/list`,
 
-    // 获取账号资产实时数据
-    GET_ACCOUNT_ASSETS: `${apiPre}account/assets_intrade`,
-    // 获取账号资产历史记录
-    GET_ACCOUNT_ASSETS_HISTORY: `${apiPre}account/assets/search`,
-    // 账号列表
-    GET_ACCOUNT_LIST: `${apiPre}account/all`,
-    // 币对管理列表
-    GET_COIN_PAIR_LIST: `${apiPre}coin/all`,
-    // 新对&修改币对
-    ADD_COIN_PAIR: `${apiPre}coin`,
-}
+  // 查询订单
+  BI_SYSTEM_GET_ORDER: `${apiPre}order`,
+  // 查询历史订单
+  GET_HISTORY_ORDER: `${apiPre}order/history_intrade`,
 
-export default api
+  // 获取账号资产实时数据
+  GET_ACCOUNT_ASSETS: `${apiPre}account/assets_intrade`,
+  // 获取账号资产历史记录
+  GET_ACCOUNT_ASSETS_HISTORY: `${apiPre}account/assets/search`,
+  // 账号列表
+  GET_ACCOUNT_LIST: `${apiPre}account/all`,
+  // 币对管理列表
+  GET_COIN_PAIR_LIST: `${apiPre}coin/all`,
+  // 新对&修改币对
+  ADD_COIN_PAIR: `${apiPre}coin`,
+
+  // 获取交易所跟单配置列表
+  GET_EXCHANGE_FOLLOW_LIST: `${apiPre}exchange/trade/all`,
+  // 修改交易所配置
+  UPDATE_EXCHANGE_FOLLOW: `${apiPre}exchange/trade`,
+};
+
+export default api;

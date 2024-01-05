@@ -1,6 +1,6 @@
 import requestApi from "@/utils/requestApi";
 import { AxiosPromise } from "axios";
-import { CoinDataOptionType,CurCoinPriceType } from "./types";
+import { CoinDataOptionType, CurCoinPriceType } from "./types";
 import config from "@/config";
 import { AxiosRequestConfig } from "axios";
 /**
@@ -105,4 +105,4 @@ export default {
   updateCoinPair,
   deleteCoinPair,
   getAccountList,
-}
+};
