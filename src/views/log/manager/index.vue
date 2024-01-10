@@ -88,7 +88,7 @@ onMounted(() => {
         >
           <template #default="scope">
             <template v-if="item.slot === 'action'">
-                <el-button type="text" size="mini" @click="handleDetail(scope.row)">
+                <el-button type="text" size="small" @click="handleDetail(scope.row)">
                     查看
                 </el-button>
             </template>

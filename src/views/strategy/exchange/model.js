@@ -31,7 +31,7 @@ export const initTableRow = [
     label: "操作",
     prop: "action",
     fixed: "right",
-    width: 120,
+    width: 140,
     slot: "action",
   },
 ];

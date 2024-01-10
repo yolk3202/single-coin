@@ -11,7 +11,7 @@ defineOptions({
       <p>
         本页内容搬迁至
         <el-button type="primary" link>
-          <router-link to="/startegy/manual">跟盘策略->手动画线</router-link>
+          <router-link to="/strategy/manual">跟盘策略->手动画线</router-link>
         </el-button>
       </p>
     </div>

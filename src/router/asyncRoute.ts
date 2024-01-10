@@ -3,9 +3,9 @@ export const Layout = () => import("@/layout/index.vue");
 export const asyncRoutes = [
   // 策略
   {
-    path: "/startegy",
+    path: "/strategy",
     component: Layout,
-    redirect: "/startegy/manual",
+    redirect: "/strategy/manual",
     meta: {
       hidden: false,
       icon: "system",
@@ -15,7 +15,7 @@ export const asyncRoutes = [
       {
         path: "manual",
         name: "manual",
-        component: () => import("@/views/startegy/manual/index.vue"),
+        component: () => import("@/views/strategy/manual/index.vue"),
         meta: {
           icon: "system",
           hidden: false,
@@ -25,7 +25,7 @@ export const asyncRoutes = [
       {
         path: "exchange",
         name: "exchange",
-        component: () => import("@/views/startegy/exchange/index.vue"),
+        component: () => import("@/views/strategy/exchange/index.vue"),
         meta: {
           icon: "system",
           hidden: false,
