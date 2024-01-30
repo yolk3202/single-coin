@@ -1,117 +1,98 @@
 <script setup>
-import moment from 'moment'
-import { initTableRow, statusList,sideList,orderTypeList} from "./model";
+import moment from "moment";
+import { initTableRow, statusList, sideList, orderTypeList } from "./model";
 import coinSystem from "@/api/coinSystem";
-import { getCoinPairList } from "@/api/coin";
 
-import statusItem from './component/statusItem.vue'
-import sideItem from './component/sideItem.vue'
+import statusItem from "./component/statusItem.vue";
+import sideItem from "./component/sideItem.vue";
 
 defineOptions({
-  name: "orderTracking",
+  name: "OrderTracking",
   inheritAttrs: false,
 });
 
 const queryFormRef = ref(ElForm); // 查询表单
 const loading = ref(false);
 
-let coinList = ref([]); // 币种列表
 
 const queryParams = reactive({
-  symbol:"",
-  start_time:"",
-  end_time:"",
+  symbol: "",
+  start_time: "",
+  end_time: "",
 });
 
 const pageCount = ref(0);
 const tableRow = reactive({ ...initTableRow });
 const tableData = ref([]);
 
-
-// 币种
-function getCoinList() {
-  getCoinPairList().then((res) => {
-    const { code, data, message } = res;
-    if(code === 200){
-      coinList.value = data || [];
-      const hasSymbol = data.some((item) => {
-        return item.symbol === "BTKUSDT";
-      });
-      if (hasSymbol) {
-        queryParams.symbol = "BTKUSDT";
-      } else {
-        queryParams.symbol = data[0].symbol;
-      }
-    }
-    handleQuery();
-  });
+function setEndTimeDisabledDate(v) {
+  let zero_time = moment(queryParams.start_time, "YYYY-MM-DD HH:mm:ss")
+    .startOf("day")
+    .valueOf();
+  return v.getTime() < zero_time;
 }
 
-function setEndTimeDisabledDate(v){
-  let zero_time = moment(queryParams.start_time, 'YYYY-MM-DD HH:mm:ss').startOf('day').valueOf();
-  return v.getTime() < zero_time
-}
-
-function setEndTimeDisabledHour(){
-  const arrs = []
-  const hour = new Date(queryParams.start_time).getHours()
+function setEndTimeDisabledHour() {
+  const arrs = [];
+  const hour = new Date(queryParams.start_time).getHours();
   for (let i = 0; i < 24; i++) {
-     if (i >= hour) continue;
-     arrs.push(i)
+    if (i >= hour) continue;
+    arrs.push(i);
   }
   return arrs;
 }
 
-function setEndTimeDisabledMinute(){
-  const arrs = []
-  const minute = new Date(queryParams.start_time).getMinutes()
+function setEndTimeDisabledMinute() {
+  const arrs = [];
+  const minute = new Date(queryParams.start_time).getMinutes();
   for (let i = 0; i < 60; i++) {
-     if (i >= minute) continue;
-     arrs.push(i)
+    if (i >= minute) continue;
+    arrs.push(i);
   }
   return arrs;
 }
 
-function setEndTimeDisabledSecond(){
-  const arrs = []
+function setEndTimeDisabledSecond() {
+  const arrs = [];
 
-  const second = new Date(queryParams.start_time).getSeconds()
+  const second = new Date(queryParams.start_time).getSeconds();
   for (let i = 0; i < 60; i++) {
-     if (i >= second) continue;
-     arrs.push(i)
+    if (i >= second) continue;
+    arrs.push(i);
   }
   return arrs;
 }
-function startTimeChange(val){
+function startTimeChange(val) {
   // val 的0时区时间
-  const t = moment(val, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
-  const time = moment(val, 'YYYY-MM-DD HH:mm:ss')
-  const endTime = moment(queryParams.end_time, 'YYYY-MM-DD HH:mm:ss')
-  if(time.isAfter(endTime)){
-    queryParams.end_time = ''
+  const t = moment(val, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+  const time = moment(val, "YYYY-MM-DD HH:mm:ss");
+  const endTime = moment(queryParams.end_time, "YYYY-MM-DD HH:mm:ss");
+  if (time.isAfter(endTime)) {
+    queryParams.end_time = "";
   }
 }
 
-function QueryInquire(){
-  handleQuery()
+function QueryInquire() {
+  handleQuery();
 }
-function resetQuery(){
+function resetQuery() {
   Object.assign(queryParams, {
-    symbol:"",
-    start_time:"",
-    end_time:"",
-  })
-  handleQuery()
+    symbol: "",
+    start_time: "",
+    end_time: "",
+  });
+  handleQuery();
 }
 // 查询
 function handleQuery() {
   loading.value = true;
-  console.log('nihao====>queryParams',queryParams)
-  coinSystem.getHistoryOrderList(queryParams)
+  console.log("nihao====>queryParams", queryParams);
+  coinSystem
+    .getHistoryOrderList(queryParams)
     .then((res) => {
-      console.log('res===>res',res);
-      const {code, data, message} = res
-      if(code === 200){
+      console.log("res===>res", res);
+      const { code, data, message } = res;
+      if (code === 200) {
         tableData.value = data;
       }
     })
@@ -119,10 +100,6 @@ function handleQuery() {
       loading.value = false;
     });
 }
-onMounted(() => {
-  // 获取币种接口
-  getCoinList();
-});
 </script>
 
 <template>
@@ -130,19 +107,10 @@ onMounted(() => {
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="币种" prop="status">
-          <el-select
+          <symbol-select
             v-model="queryParams.symbol"
-            placeholder="选择币种"
-            filterable
-            clearable
-          >
-            <el-option
-              v-for="item in coinList"
-              :key="item.symbol"
-              :value="item.symbol"
-              :label="item.symbol"
-            />
-          </el-select>
+            @on-change="QueryInquire"
+          />
         </el-form-item>
         <el-form-item label="买卖方向:" v-if="false">
           <el-select
@@ -158,7 +126,7 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="订单类型:"  v-if="false">
+        <el-form-item label="订单类型:" v-if="false">
           <el-select
             v-model="queryParams.order_type"
             placeholder="选择订单类型"
@@ -173,7 +141,7 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="订单状态:"  v-if="false">
+        <el-form-item label="订单状态:" v-if="false">
           <el-select
             v-model="queryParams.status"
             placeholder="选择订单状态"
@@ -198,14 +166,14 @@ onMounted(() => {
             :clearable="false"
             @change="startTimeChange"
           />
-          <span style="width:16px;text-align: center;"> - </span>
+          <span style="width: 16px; text-align: center"> - </span>
           <el-date-picker
             v-model="queryParams.end_time"
             type="datetime"
             placeholder="选择结束时间"
             :disabled-date="setEndTimeDisabledDate"
             :disabled-hours="setEndTimeDisabledHour"
-            :disabled-minutes="setEndTimeDisabledMinute" 
+            :disabled-minutes="setEndTimeDisabledMinute"
             :disabled-seconds="setEndTimeDisabledSecond"
             format="YYYY-MM-DD HH:mm:ss"
             value-format="YYYY-MM-DD HH:mm:ss"
@@ -216,9 +184,7 @@ onMounted(() => {
           <el-button type="primary" @click="QueryInquire">
             <i-ep-search />查询
           </el-button>
-          <el-button @click="resetQuery">
-              <i-ep-refresh /> 重置
-          </el-button >
+          <el-button @click="resetQuery"> <i-ep-refresh /> 重置 </el-button>
         </el-form-item>
       </el-form>
     </div>

@@ -49,14 +49,14 @@ const drawer = reactive({
 });
 let formValue = reactive({
   symbol: "",
-  follow_type: "",
+  // follow_type: "",
   // status: stateMap.STOPPED,
   configList: [{ id: "", name: "", symbol: "", weight: "" }],
 });
 
 const rules = reactive({
   symbol: [{ required: true, message: "请选择币种", trigger: "blur" }],
-  follow_type: [{ required: true, message: "请选择跟单类型", trigger: "blur" }],
+  // follow_type: [{ required: true, message: "请选择跟单类型", trigger: "blur" }],
 });
 
 function addNew() {
@@ -65,7 +65,7 @@ function addNew() {
   drawer.action = "add";
   formValue = reactive({
     symbol: "",
-    follow_type: "",
+    // follow_type: "",
     // status: stateMap.STOPPED,
     configList: [{ id: "", name: "", symbol: "", weight: "" }],
   });
@@ -136,7 +136,7 @@ function handleConfirm() {
         // 编辑
         let options = {
           id: formValue.id,
-          follow_type: formValue.follow_type,
+          // follow_type: formValue.follow_type,
           config: formValue.configList,
         };
         exchangeApi.updateExchangeConfig(options).then((res) => {
@@ -160,7 +160,7 @@ function handleConfirm() {
         // 新增
         let options = {
           symbol: formValue.symbol,
-          follow_type: formValue.follow_type,
+          // follow_type: formValue.follow_type,
           config: formValue.configList,
         };
         exchangeApi.addExchangeConfig(options).then((res) => {
@@ -293,7 +293,7 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="跟单类型" prop="follow_type">
+        <!-- <el-form-item label="跟单类型" prop="follow_type">
           <el-select v-model="formValue.follow_type" placeholder="选择跟单类型">
             <el-option
               v-for="item in followStrategyList"
@@ -302,7 +302,7 @@ onMounted(() => {
               :label="item.label"
             />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <!-- <el-form-item label="状态">
           <el-switch
             v-model="formValue.status"

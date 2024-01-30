@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { useUserStore } from "@/store/modules/user";
-import { useTransition, TransitionPresets } from "@vueuse/core";
 import { formatDateToYMD } from "@/utils/utils";
-import { getCoinPairList } from "@/api/coin";
-
 import { useCoinStore } from "@/store/modules/coin";
 const coinStore = useCoinStore();
 
@@ -21,46 +17,19 @@ const queryParams = reactive({
   utcTime: "",
   chinaTime: "",
 });
-let coinList = ref([]); // 币种列表
 
-function changeDate(val: any) {
-  console.log(val);
+function changeDate() {
   getPrice();
 }
 function selectCoinType() {
   getPrice();
 }
-
-function getCoinList() {
-  getCoinPairList().then((res) => {
-    const { code, data, message } = res;
-    if(code === 200){
-      coinList.value = data || [];
-      const hasSymbol = data.some((item: any) => {
-        return item.symbol === "BTKUSDT";
-      });
-      if (hasSymbol) {
-        queryParams.symbol = "BTKUSDT";
-      } else {
-        queryParams.symbol = data[0].symbol;
-      }
-    }
-    getPrice();
-  });
-}
-
 function getPrice() {
   let option = {
     symbol: queryParams.symbol,
-    date: queryParams.date
-  }
-  console.log('getPrice option ==>', option)
-  // getCurCoinPrice(option).then((res) => {
-  //   const { code, data, message } = res;
-  //   code === 200? queryParams.radio = Number(data.last_price): queryParams.radio = 10
-  //
-  // });
-  queryParams.radio = 100
+    date: queryParams.date,
+  };
+  queryParams.radio = 100;
   handleQuery();
 }
 
@@ -69,25 +38,24 @@ const generateUtcTime = async () => {
     const now = new Date();
     // 获取UTC时间
     var op = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      timeZone: 'UTC'
-    }
-    queryParams.utcTime = now.toLocaleString('en-US', op);
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZone: "UTC",
+    };
+    queryParams.utcTime = now.toLocaleString("en-US", op);
 
     // 获取中国时间（北京时区为东八区）
     const chinaTimezoneOffset = 8 * 60;
     const chinaTime = new Date(now.getTime() + chinaTimezoneOffset * 60 * 1000);
-    queryParams.chinaTime = chinaTime.toLocaleString('en-US', op);
+    queryParams.chinaTime = chinaTime.toLocaleString("en-US", op);
     // 等待 1 秒
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 };
-
 
 async function handleQuery() {
   // 请求接口； todo
@@ -100,11 +68,8 @@ async function handleQuery() {
   await coinStore.getCoinDataAction(options);
 }
 
-
 onMounted(() => {
   generateUtcTime();
-  // 获取币种接口
-  getCoinList();
   // 初始化时间
   queryParams.date = formatDateToYMD(new Date());
 });
@@ -115,7 +80,7 @@ onMounted(() => {
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <h1>图表中 X 轴为 UTC 时间</h1>
-        <p>UTC 时间: {{queryParams.utcTime }}</p>
+        <p>UTC 时间: {{ queryParams.utcTime }}</p>
         <p>中国时间: {{ queryParams.chinaTime }}</p>
         <el-form-item label="UTC日期" prop="keywords">
           <el-date-picker
@@ -128,23 +93,14 @@ onMounted(() => {
           />
         </el-form-item>
         <el-form-item label="币种" prop="status">
-          <el-select
+          <symbol-select
             v-model="queryParams.symbol"
-            placeholder="选择币种"
-            @change="selectCoinType"
-            clearable
-          >
-            <el-option
-              v-for="item in coinList"
-              :key="item.symbol"
-              :value="item.symbol"
-              :label="item.symbol"
-            />
-          </el-select>
+            @on-change="selectCoinType"
+          />
         </el-form-item>
-<!--        <el-form-item label="百分比" prop="status">-->
-<!--          <el-input-number v-model="queryParams.radio" size="large" />-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="百分比" prop="status">-->
+        <!--          <el-input-number v-model="queryParams.radio" size="large" />-->
+        <!--        </el-form-item>-->
         <el-form-item>
           <el-button class="filter-item" type="primary" @click="handleQuery">
             <i-ep-search />
@@ -168,7 +124,6 @@ onMounted(() => {
           class="bg-[var(--el-bg-color-overlay)]"
         />
       </el-col>
-
     </el-row>
 
     <!-- K 线图 -->

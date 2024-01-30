@@ -12,7 +12,7 @@ export const initTableRow = [
     align: "left",
   },
   {
-    label: "跟盘策略",
+    label: "铺单跟盘策略",
     prop: "tracking_strategy",
     slot: "strategy",
     minWidth: 120,
@@ -27,7 +27,10 @@ export const initTableRow = [
   },
 ];
 
-export const trackingStrategyList = [{ value: "DRAW_LINE", label: "画线" }];
+export const trackingStrategyList = [
+  { value: "DRAW_LINE", label: "画线" },
+  { value: "EXCHANGE", label: "交易所" },
+];
 
 export const stateMap = {
   // 正常

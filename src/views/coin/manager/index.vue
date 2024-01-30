@@ -204,6 +204,9 @@ onMounted(() => {
               <span v-if="scope.row[item.prop] === 'DRAW_LINE'"
                 >画线({{ scope.row[item.prop] }})</span
               >
+              <span v-if="scope.row[item.prop] === 'EXCHANGE'"
+                >交易所({{ scope.row[item.prop] }})</span
+              >
             </template>
             <template v-if="item.slot === 'action'">
               <el-button type="text" size="small" @click="editItem(scope.row)">
@@ -261,7 +264,6 @@ onMounted(() => {
           <el-select
             v-model="formValue.tracking_strategy"
             placeholder="选择跟盘策略"
-            disabled
           >
             <el-option
               v-for="item in trackingStrategyList"

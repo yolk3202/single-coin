@@ -20,13 +20,13 @@ export const initTableRow = [
     minWidth: 100,
     align: "left",
   },
-  {
-    label: "跟单类型",
-    prop: "follow_type",
-    slot: "strategy",
-    minWidth: 100,
-    align: "left",
-  },
+  // {
+  //   label: "跟单类型",
+  //   prop: "follow_type",
+  //   slot: "strategy",
+  //   minWidth: 100,
+  //   align: "left",
+  // },
   {
     label: "操作",
     prop: "action",

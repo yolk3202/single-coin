@@ -14,6 +14,7 @@ declare module "@vue/runtime-core" {
     Breadcrumb: typeof import("./../components/Breadcrumb/index.vue")["default"];
     CandleChart: typeof import("./../views/dashboard/components/CandleChart.vue")["default"];
     Dictionary: typeof import("./../components/Dictionary/index.vue")["default"];
+    SymbolSelect: typeof import("./../components/SymbolSelect/index.vue")["default"];
     DragChart: typeof import("../views/dashboard/components/DragChart2.vue")["default"];
     ElAlert: typeof import("element-plus/es")["ElAlert"];
     ElBreadcrumb: typeof import("element-plus/es")["ElBreadcrumb"];
