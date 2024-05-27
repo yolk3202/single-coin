@@ -1,4 +1,8 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosRequestConfig } from "axios";
+import axios, {
+  InternalAxiosRequestConfig,
+  AxiosResponse,
+  AxiosRequestConfig,
+} from "axios";
 import config from "@/config";
 // console.log('...config', config)
 
@@ -32,9 +36,9 @@ service.interceptors.response.use(
       console.log("404 response ==>", response);
       return response.data;
     }
-    if(code === 401){
+    if (code === 401) {
       console.log("401 response ==>", response);
-      if(message === 'Token is invalid'){
+      if (message === "Token is invalid") {
         // 关注其他api接口 是否要做token校验
         ElMessageBox.confirm("当前页面已失效，请重新登录", "提示", {
           confirmButtonText: "确定",
@@ -56,20 +60,23 @@ service.interceptors.response.use(
     return Promise.reject(new Error(message || "Error"));
   },
   (error: any) => {
-    const {message, response} = error;
-    const {status, config:{url}} = response;
-    if(status >= 500){
-      ElMessage.error(`服务器错误，请联系开发人员! message: ${message}`)
+    const { message, response } = error;
+    const {
+      status,
+      config: { url },
+    } = response;
+    if (status >= 500) {
+      ElMessage.error(`服务器错误，请联系开发人员! message: ${message}`);
       return Promise.reject(error.message);
     }
-    if(status >= 400){
-      ElMessage.error(`接口不存在，请联系开发人员! 接口: ${url}`)
+    if (status >= 400) {
+      ElMessage.error(`接口不存在，请联系开发人员! 接口: ${url}`);
       return Promise.reject(error.message);
     }
     // 超时
-    if (error.code === 'ECONNABORTED') {
+    if (error.code === "ECONNABORTED") {
       // 如果错误是由于超时引起的，显示一个提示
-      ElMessage.error('接口超时，请刷新页面或者重新请求')
+      ElMessage.error("接口超时，请刷新页面或者重新请求");
     }
     // 内部约定
     if (error.response.data) {
@@ -92,7 +99,7 @@ service.interceptors.response.use(
 );
 
 function dealWidthParams(data: { [key: string]: any } | null | undefined) {
-  let config =  data && data.value ? data.value : data;
+  let config = data && data.value ? data.value : data;
   for (let key in config) {
     if (
       config[key] === "" ||
@@ -107,12 +114,12 @@ function dealWidthParams(data: { [key: string]: any } | null | undefined) {
 }
 // 导出 axios 实例
 export default function (reqConfig: AxiosRequestConfig<any>) {
-  reqConfig.data =reqConfig.data && dealWidthParams(reqConfig.data);
+  reqConfig.data = reqConfig.data && dealWidthParams(reqConfig.data);
   // reqConfig.params =reqConfig.params&& dealWidthParams(reqConfig.params);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   // 判断当前接口是否需要 添加自定义头部
-  if(!config.noTokenList.includes(reqConfig.url as string)){
-    reqConfig.headers = { ...reqConfig.headers, Authorization: token }
+  if (!config.noTokenList.includes(reqConfig.url as string)) {
+    reqConfig.headers = { ...reqConfig.headers, Authorization: token };
   }
   return service(reqConfig);
 }
