@@ -1,29 +1,39 @@
 <script setup>
+import { cloneDeep } from "lodash-es";
+import exchangeApi from "@/api/exchange";
 import coinApi from "@/api/coin";
-import { initTableRow, trackingStrategyList, stateMap } from "./model.js";
+import {
+  initTableRow,
+  followStrategyList,
+  stateMap,
+  dealWithData,
+} from "./model.js";
+
 const infoFormRef = ref(ElForm);
-const accountList = ref([]);
-function getAccountList() {
-  coinApi.getAccountList().then((res) => {
+let loading = ref(false);
+
+const coinList = ref([]);
+function getSymbolList() {
+  coinApi.getCoinPairList().then((res) => {
     console.log(res);
     const { code, data, message } = res;
     if (code === 200) {
-      accountList.value = data || [];
+      coinList.value = data || [];
     }
   });
 }
-let loading = ref(false);
+
 const tableData = ref([]);
 const tableRow = ref([...initTableRow]);
-function getCoinPairList() {
+function getExchangeList() {
   loading.value = true;
-  coinApi
-    .getCoinPairList()
+  exchangeApi
+    .getExchangeConfigList()
     .then((res) => {
       console.log(res);
       const { code, data, message } = res;
       if (code === 200) {
-        tableData.value = data || [];
+        tableData.value = dealWithData(data) || [];
       }
     })
     .finally(() => {
@@ -33,33 +43,39 @@ function getCoinPairList() {
 
 const drawer = reactive({
   visible: false,
-  title: "新增币对",
+  title: "新增",
   direction: "rtl",
   action: "add",
 });
 let formValue = reactive({
   symbol: "",
-  account_id: "",
-  tracking_strategy: "DRAW_LINE",
-  state: stateMap.STOPPED,
+  // follow_type: "",
+  // status: stateMap.STOPPED,
+  configList: [{ id: "", name: "", symbol: "", weight: "" }],
 });
+
+const rules = reactive({
+  symbol: [{ required: true, message: "请选择币种", trigger: "blur" }],
+  // follow_type: [{ required: true, message: "请选择跟单类型", trigger: "blur" }],
+});
+
 function addNew() {
   drawer.visible = true;
-  drawer.title = "新增币对";
+  drawer.title = "新增";
   drawer.action = "add";
   formValue = reactive({
     symbol: "",
-    account_id: "",
-    tracking_strategy: "DRAW_LINE",
-    state: stateMap.STOPPED,
+    // follow_type: "",
+    // status: stateMap.STOPPED,
+    configList: [{ id: "", name: "", symbol: "", weight: "" }],
   });
 }
 
 function editItem(row) {
   drawer.visible = true;
-  drawer.title = "编辑币对";
+  drawer.title = "编辑";
   drawer.action = "edit";
-  formValue = reactive({ ...row });
+  formValue = reactive({ ...cloneDeep(row) });
 }
 
 function deleteItem(row) {
@@ -70,7 +86,7 @@ function deleteItem(row) {
     type: "warning",
   })
     .then(() => {
-      coinApi.deleteCoinPair({ id: row.id }).then((res) => {
+      exchangeApi.deleteExchangeConfig({ id: row.id }).then((res) => {
         console.log(res);
         const { code, data, message } = res;
         if (code === 200) {
@@ -78,7 +94,8 @@ function deleteItem(row) {
             message: "删除成功～",
             type: "success",
           });
-          getCoinPairList();
+          console.log("data=>:", data);
+          getExchangeList();
         } else {
           ElMessage({
             message: `删除失败${message}`,
@@ -100,14 +117,29 @@ function handleConfirm() {
   infoFormRef.value.validate((valid) => {
     if (valid) {
       console.log("submit!", formValue);
+      const { configList } = formValue;
+      if (configList.length === 0) {
+        ElMessage({
+          message: "请填写配置～",
+          type: "error",
+        });
+        return;
+      }
+      if(configList.some(item => !item.name || !item.symbol || !item.weight)) {
+        ElMessage({
+          message: "请填写完整配置～",
+          type: "error",
+        });
+        return;
+      }
       if (formValue.id) {
         // 编辑
         let options = {
           id: formValue.id,
-          tracking_strategy: formValue.tracking_strategy,
-          state: formValue.state,
+          // follow_type: formValue.follow_type,
+          config: formValue.configList,
         };
-        coinApi.updateCoinPair(options).then((res) => {
+        exchangeApi.updateExchangeConfig(options).then((res) => {
           console.log("edit", res);
           const { code, data, message } = res;
           if (code === 200) {
@@ -115,18 +147,23 @@ function handleConfirm() {
               message: "修改成功～",
               type: "success",
             });
-            getCoinPairList();
+            getExchangeList();
             handleClose();
           } else {
             ElMessage({
-              message: `失败${message}`,
+              message: `修改失败：${message}`,
               type: "error",
             });
           }
         });
       } else {
         // 新增
-        coinApi.addCoinPair(formValue).then((res) => {
+        let options = {
+          symbol: formValue.symbol,
+          // follow_type: formValue.follow_type,
+          config: formValue.configList,
+        };
+        exchangeApi.addExchangeConfig(options).then((res) => {
           console.log("add", res);
           const { code, data, message } = res;
           if (code === 200) {
@@ -134,11 +171,11 @@ function handleConfirm() {
               message: "新增成功～",
               type: "success",
             });
-            getCoinPairList();
+            getExchangeList();
             handleClose();
           } else {
             ElMessage({
-              message: `失败${message}`,
+              message: `新增失败：${message}`,
               type: "error",
             });
           }
@@ -155,21 +192,17 @@ function handleClose() {
   drawer.visible = false;
 }
 
-let coinList = ref([]);
-function getCoinTypeList() {
-  coinApi.getCoinTypeList().then((res) => {
-    console.log(res);
-    const { code, data, message } = res;
-    if (code === 200) {
-      coinList.value = data;
-    }
-  });
+function addConfig() {
+  console.log("addConfig");
+  formValue.configList.push({ id: "", name: "", symbol: "", weight: "" });
 }
-
+function deleteConfig(index) {
+  console.log("deleteConfig", index);
+  formValue.configList.splice(index, 1);
+}
 onMounted(() => {
-  getAccountList();
-  getCoinPairList();
-  getCoinTypeList();
+  getExchangeList();
+  getSymbolList();
 });
 </script>
 <template>
@@ -191,22 +224,30 @@ onMounted(() => {
           :min-width="item.minWidth"
         >
           <template #default="scope">
+            <template v-if="item.slot === 'config'">
+              <el-table :data="scope.row[item.prop]" border>
+                <el-table-column label="交易所" prop="name" />
+                <el-table-column label="币种" prop="symbol" />
+                <el-table-column label="权重" prop="weight" />
+              </el-table>
+            </template>
             <template v-if="item.slot === 'status'">
               <span>{{
-                scope.row[item.prop] === stateMap.RUNNING
+                scope.row[item.prop] === 1
                   ? "正常"
-                  : scope.row[item.prop] === stateMap.STOPPED
+                  : scope.row[item.prop] === 0
                   ? "停用"
                   : "未知"
               }}</span>
             </template>
             <template v-if="item.slot === 'strategy'">
-              <span v-if="scope.row[item.prop] === 'DRAW_LINE'"
-                >画线({{ scope.row[item.prop] }})</span
+              <span
+                v-if="scope.row[item.prop] === followStrategyList[0].value"
+                >{{ followStrategyList[0].label }}</span
               >
-              <span v-if="scope.row[item.prop] === 'EXCHANGE'"
-                >交易所({{ scope.row[item.prop] }})</span
-              >
+              <span v-if="scope.row[item.prop] === followStrategyList[1].value">
+                {{ followStrategyList[1].label }}
+              </span>
             </template>
             <template v-if="item.slot === 'action'">
               <el-button type="text" size="small" @click="editItem(scope.row)">
@@ -228,10 +269,16 @@ onMounted(() => {
       v-model="drawer.visible"
       :title="drawer.title"
       :direction="drawer.direction"
+      size="50%"
       :before-close="handleClose"
     >
-      <el-form ref="infoFormRef" label-width="120px" :model="formValue">
-        <el-form-item label="币对">
+      <el-form
+        ref="infoFormRef"
+        label-width="120px"
+        :model="formValue"
+        :rules="rules"
+      >
+        <el-form-item label="币对" prop="symbol">
           <el-select
             v-model="formValue.symbol"
             placeholder="填写币种"
@@ -240,45 +287,61 @@ onMounted(() => {
           >
             <el-option
               v-for="item in coinList"
-              :key="item"
-              :value="item"
-              :label="item"
+              :key="item.symbol"
+              :value="item.symbol"
+              :label="item.symbol"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="账号ID">
-          <el-select
-            v-model="formValue.account_id"
-            placeholder="选择账号"
-            :disabled="drawer.action === 'edit'"
-          >
+        <!-- <el-form-item label="跟单类型" prop="follow_type">
+          <el-select v-model="formValue.follow_type" placeholder="选择跟单类型">
             <el-option
-              v-for="item in accountList"
-              :key="item.id"
-              :value="item.id"
-              :label="item.uname"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="跟盘策略">
-          <el-select
-            v-model="formValue.tracking_strategy"
-            placeholder="选择跟盘策略"
-          >
-            <el-option
-              v-for="item in trackingStrategyList"
+              v-for="item in followStrategyList"
               :key="item.value"
               :value="item.value"
               :label="item.label"
             />
           </el-select>
-        </el-form-item>
-        <el-form-item label="状态">
+        </el-form-item> -->
+        <!-- <el-form-item label="状态">
           <el-switch
-            v-model="formValue.state"
+            v-model="formValue.status"
             :active-value="stateMap.RUNNING"
             :inactive-value="stateMap.STOPPED"
           />
+        </el-form-item> -->
+        <el-form-item
+          v-for="(co, index) in formValue.configList"
+          :label="'配置' + index"
+          :key="index"
+        >
+          <el-row :gutter="10">
+            <el-col :span="6">
+              <el-input v-model="co.name" placeholder="填写交易所名称" />
+            </el-col>
+            <el-col :span="6">
+              <el-input v-model="co.symbol" placeholder="填写币种" />
+            </el-col>
+            <el-col :span="6">
+              <el-input
+                v-model="co.weight"
+                type="number"
+                placeholder="填写权重"
+              />
+            </el-col>
+            <el-col :span="6">
+              <el-button type="primary" size="small" @click="addConfig">
+                增加
+              </el-button>
+              <el-button
+                :disabled="index === 0"
+                size="small"
+                @click="deleteConfig(index)"
+              >
+                删除
+              </el-button>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleConfirm">确认</el-button>

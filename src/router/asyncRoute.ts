@@ -1,7 +1,39 @@
 export const Layout = () => import("@/layout/index.vue");
 
 export const asyncRoutes = [
-  
+  // 策略
+  {
+    path: "/strategy",
+    component: Layout,
+    redirect: "/strategy/manual",
+    meta: {
+      hidden: false,
+      icon: "system",
+      title: "跟盘策略",
+    },
+    children: [
+      {
+        path: "manual",
+        name: "manual",
+        component: () => import("@/views/strategy/manual/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "手动画线",
+        },
+      },
+      {
+        path: "exchange",
+        name: "exchange",
+        component: () => import("@/views/strategy/exchange/index.vue"),
+        meta: {
+          icon: "system",
+          hidden: false,
+          title: "交易所",
+        },
+      },
+    ],
+  },
   {
     path: "/robot_system",
     component: Layout,

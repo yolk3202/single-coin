@@ -4,7 +4,6 @@ export interface ApiType {
 
 export interface ConfigType {
   env: String;
-  api: ApiType;
   baseUrl: String;
   noTokenList: Array<String>;
 }

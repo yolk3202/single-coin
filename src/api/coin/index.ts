@@ -1,6 +1,6 @@
 import requestApi from "@/utils/requestApi";
 import { AxiosPromise } from "axios";
-import { CoinDataOptionType,CurCoinPriceType } from "./types";
+import { CoinDataOptionType, CurCoinPriceType } from "./types";
 import config from "@/config";
 import { AxiosRequestConfig } from "axios";
 /**
@@ -33,6 +33,7 @@ export function getCoinTypeList(): AxiosPromise {
     method: "get",
   } as AxiosRequestConfig<any>);
 }
+
 // 获取当前交易货币价格
 export function getCurCoinPrice(options: CurCoinPriceType): AxiosPromise {
   return requestApi({
@@ -41,6 +42,7 @@ export function getCurCoinPrice(options: CurCoinPriceType): AxiosPromise {
     params: options,
   } as AxiosRequestConfig<any>);
 }
+
 // 获取货币列表
 export function getCoinList(): AxiosPromise {
   return requestApi({
@@ -74,6 +76,16 @@ export function updateCoinPair(options: any): AxiosPromise {
   } as AxiosRequestConfig<any>);
 }
 
+// 删除币对
+export function deleteCoinPair(options: any): AxiosPromise {
+  return requestApi({
+    url: config.api.ADD_COIN_PAIR,
+    method: "delete",
+    data: options,
+  } as AxiosRequestConfig<any>);
+}
+
+
 // 获取账号列表
 export function getAccountList(): AxiosPromise {
   return requestApi({
@@ -81,6 +93,7 @@ export function getAccountList(): AxiosPromise {
     method: "get",
   } as AxiosRequestConfig<any>);
 }
+
 export default {
   getCoinDataApi,
   sendCoinDataApi,
@@ -90,5 +103,6 @@ export default {
   getCoinPairList,
   addCoinPair,
   updateCoinPair,
+  deleteCoinPair,
   getAccountList,
-}
+};
